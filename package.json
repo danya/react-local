@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-react-local",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Babel plugin that helps you to improve speed of React JSX",
   "keywords": [
     "react",
