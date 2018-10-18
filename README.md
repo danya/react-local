@@ -1,6 +1,10 @@
 # React Local
 
-Babel plugin that helps you to compress React JSX with local variables.
+Babel plugin that helps you to improve speed of React JSX with local variables.
+
+- **Calling of `createElement` is about 40% faster** ([see benchmarks](https://jsperf.com/call-to-object-method)).
+- Reduce amount of code browser need to parse.
+- Reduce bundle size in case when you do not use gzip.
 
 **Input**:
 
@@ -46,18 +50,24 @@ const App = props =>
   )
 ```
 
-**The difference between these two results is ability of UglifyJS to change names of React properties to shorter one.**
+### Speed improvements
 
-Let's analyze minified version of codes above created by Webpack production mode. (`React.default` showed here as not minified for better understanding, in real bundle it will something like `o.a`).
+Using JSX you really often call the same function, but always directly (`o.a.createElement`). Using local variable to access the same object property is **nearly 40% faster** ([see benchmarks](https://jsperf.com/call-to-object-method)).
 
-- With `react-local`:
+### Size improvements
+
+Honestly, there is almost **NO size effect if you use gzip**, but if you do not (why?!) it can help your to reduce bundle size (just always `l` instead of always `o.a.createElement`). _Also amount of code browser need to parse is less anyway._
+
+Let's analyze minified version of codes above created by Webpack production mode. (`React.default` showed here as not minified for better understanding, in real bundle it will something like `o.a`). The difference between these two results is ability of UglifyJS to change names of React properties to shorter one.
+
+- with `react-local`:
 
 ```javascript
 const { Fragment: u, createElement: l } = React.default
 const a = l(u, null, l('h1', null, 'Header'), l('p', null, 'Text'))
 ```
 
-- Without `react-local`:
+- without `react-local`:
 
 ```javascript
 const a = React.default.createElement(
@@ -77,9 +87,11 @@ yarn add --dev babel-plugin-react-local
 
 ## Usage
 
+_Note_: there are also some other way do something like this plugin do using Babel and Webpack: [see here](https://medium.com/@jilizart/reduce-the-size-of-final-jsx-code-c39effca906f)
+
 **NB**: `react-local` works only with ES6 Modules because it looks for `import` statement.
 
-> If you use CommonJS you don't need `react-local`. You should just configure plugin for JSX (chage `pragma`) and use such syntax for accessing of React properties:
+> If you use CommonJS you don't need `react-local`. You should just configure plugin for JSX (change `pragma`) and use such syntax for accessing of React properties:
 >
 > ```javascript
 > const { createElement } = require('react')

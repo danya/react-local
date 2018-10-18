@@ -1,7 +1,7 @@
 {
   "name": "babel-plugin-react-local",
   "version": "0.1.0",
-  "description": "Babel plugin that helps you to compress React JSX",
+  "description": "Babel plugin that helps you to improve speed of React JSX",
   "keywords": [
     "react",
     "jsx",
