@@ -92,8 +92,6 @@ yarn add --dev babel-plugin-react-local
 
 ## Usage
 
-_Note_: there are also some other way do something like this plugin do using Babel and Webpack: [see here](https://medium.com/@jilizart/reduce-the-size-of-final-jsx-code-c39effca906f)
-
 **NB**: `react-local` works only with ES6 Modules because it looks for `import` statement.
 
 > If you use CommonJS you don't need `react-local`. You should just configure plugin for JSX (change `pragma`) and use such syntax for accessing of React properties:
@@ -140,6 +138,12 @@ Available plugin options:
 - `alwaysCreateElement` (boolean) - always import `createElement` even if it is not defined in import statement (defaults to `true`).
 - `alwaysFragment` (boolean) - always import `Fragment` even if it is not defined in import statement (defaults to `false`).
 - `declaration` (`'var' | 'let' | 'const'`) - token used for variable declaration (defaults to `const`).
+
+## Other ways
+
+There are also some other ways do something like this plugin do:
+- webpack + `@babel/preset-react` — see [article](https://medium.com/@jilizart/reduce-the-size-of-final-jsx-code-c39effca906f) 
+- webpack `jsx-compress-loader` — see [repository](https://github.com/theKashey/jsx-compress-loader)
 
 ## License
 
