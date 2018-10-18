@@ -2,7 +2,7 @@
 
 Babel plugin that helps you to improve speed of React JSX with local variables.
 
-- **Calling of `createElement` is about 40% faster** ([see benchmarks](https://jsperf.com/call-to-object-method)).
+- **Make calling of `createElement` about 40% faster** ([see benchmarks](https://jsperf.com/call-to-object-method)).
 - Reduce amount of code browser need to parse.
 - Reduce bundle size in case when you do not use gzip.
 
