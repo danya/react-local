@@ -1,10 +1,12 @@
 # React Local
 
-Babel plugin that helps you to improve speed of React JSX with local variables.
+Babel plugin for perfectionists that helps you to improve React JSX.
 
-- **Make calling of `createElement` about 40% faster** in some browsers ([see below](#speed-improvements)).
 - Reduce amount of code browser need to parse.
-- Reduce bundle size in case when you do not use gzip.
+- Much reduce size of non gzipped bundle and a bit of gzipped one in big projects — squeeze everything ([more](#size-improvements))
+- No extra triple property access every time: make calling of `createElement` faster in some browsers ([more](#speed-improvements))
+
+Note this plugin may not make huge effect you expect but may make some nice small improvements.
 
 **Input**:
 
@@ -52,16 +54,21 @@ const App = props =>
 
 ### Speed improvements
 
-Using JSX you really often call the same function, but always directly (`o.a.createElement`). Using local variable to access the same object property is can give some benefit ([see benchmarks](https://jsperf.com/call-to-object-method)):
+Using JSX you often call the same function, but always directly (`o.a.createElement`) — a lot of extra property access every time. Using local variable to access the same property can give some benefit ([see benchmarks](https://jsperf.com/call-to-object-method)):
 
 - **Chrome and Opera**: using local var is **40% faster**.
 - **Chrome Mobile**: using local var is **55% faster**.
 - **Firefox**: result are almost the same (local variable is fater for a few percent only).
-- **Safari** and **Safari Mobile**: unfortunatelly, using local variable is _~7% slower_.
+- **Safari** and **Safari Mobile**: unfortunately, using local variable is _~7% slower_.
+
+Note that just mechanism of property access was tested and real usage of local variable with React may have different results.
 
 ### Size improvements
 
-Honestly, there is almost **NO size effect if you use gzip**, but if you do not (why?!) it can help your to reduce bundle size (just always `l` instead of always `o.a.createElement`). _Also amount of code browser need to parse is less anyway._
+Amount of code browser need to parse is less anyway.
+
+Honestly, there is **almost NO size effect if you use gzip** because gzip usually works fairly well for repeated strings.
+But if you do not (why?!) it can help your to reduce bundle size (just always `l` instead of always `o.a.createElement`, so about -1KB for each 64 calling of `createElement`). 
 
 Let's analyze minified version of codes above created by Webpack production mode. (`React.default` showed here as not minified for better understanding, in real bundle it will something like `o.a`). The difference between these two results is ability of UglifyJS to change names of React properties to shorter one.
 
