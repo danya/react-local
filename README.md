@@ -1,6 +1,6 @@
 # React Local
 
-Babel plugin for perfectionists that helps you to improve React JSX.
+Babel plugin for perfectionists that helps to slightly optimize React
 
 - Reduce amount of code browser need to parse.
 - Much reduce size of non gzipped bundle and a bit of gzipped one in big projects — squeeze everything ([more](#size-improvements))
@@ -68,7 +68,7 @@ Note that just mechanism of property access was tested and real usage of local v
 Amount of code browser need to parse is less anyway.
 
 Honestly, there is **almost NO size effect if you use gzip** because gzip usually works fairly well for repeated strings.
-But if you do not (why?!) it can help your to reduce bundle size (just always `l` instead of always `o.a.createElement`, so about -1KB for each 64 calling of `createElement`). 
+But if you do not (why?!) it can help your to reduce bundle size (just always `l` instead of always `o.a.createElement`, so about -1KB for each 64 calling of `createElement`).
 
 Let's analyze minified version of codes above created by Webpack production mode. (`React.default` showed here as not minified for better understanding, in real bundle it will something like `o.a`). The difference between these two results is ability of UglifyJS to change names of React properties to shorter one.
 
@@ -149,7 +149,8 @@ Available plugin options:
 ## Other ways
 
 There are also some other ways do something like this plugin do:
-- webpack + `@babel/preset-react` — see [article](https://medium.com/@jilizart/reduce-the-size-of-final-jsx-code-c39effca906f) 
+
+- webpack + `@babel/preset-react` — see [article](https://medium.com/@jilizart/reduce-the-size-of-final-jsx-code-c39effca906f)
 - webpack `jsx-compress-loader` — see [repository](https://github.com/theKashey/jsx-compress-loader)
 
 ## License
