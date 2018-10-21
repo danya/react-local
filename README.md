@@ -1,6 +1,6 @@
 # React Local
 
-Babel plugin for perfectionists that helps to slightly optimize React
+Babel plugin for perfectionists that helps to slightly optimize React transforming your imports to local variables.
 
 - Reduce amount of code browser need to parse.
 - Much reduce size of non gzipped bundle and a bit of gzipped one in big projects — squeeze everything ([more](#size-improvements))
