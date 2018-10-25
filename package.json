@@ -17,7 +17,14 @@
   "author": "Daniil Poroshin <daniilporoshin@gmail.com>",
   "license": "MIT",
   "main": "src/index.js",
+  "scripts": {
+    "test": "jest --coverage"
+  },
   "dependencies": {
     "@babel/types": "^7.1.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "jest": "^23.6.0"
   }
 }

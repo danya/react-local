@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`always imports \`Fragment\` if option is enabled 1`] = `
+"import React from \\"react\\";
+const {
+  createElement: createElement,
+  Fragment: Fragment
+} = React;"
+`;
+
+exports[`always imports \`createElement\` if option is enabled 1`] = `
+"import React from \\"react\\";
+const {
+  createElement: createElement
+} = React;"
+`;
+
+exports[`do not always import \`createElement\` if option is disabled 1`] = `
+"import React from \\"react\\";
+const {
+  Fragment: Fragment
+} = React;"
+`;
+
+exports[`do not extract imports if it is not necessary 1`] = `"import React from 'react';"`;
+
+exports[`do nothing if source is not \`react\` 1`] = `"import { someFunction } from 'some-module';"`;
+
+exports[`extract React imports to local vars 1`] = `
+"import React from \\"react\\";
+const {
+  Fragment: Fragment,
+  Suspense: Suspense,
+  createElement: createElement
+} = React;"
+`;
+
+exports[`uses specified \`pragma\` and \`pragmaFrag\` 1`] = `
+"import React from \\"react\\";
+const {
+  Fragment: specifiedFragment,
+  createElement: specifiedCE
+} = React;"
+`;
+
+exports[`uses specified declaration token and \`const\` by default 1`] = `
+"import React from \\"react\\";
+const {
+  createElement: createElement
+} = React;"
+`;
+
+exports[`uses specified declaration token and \`const\` by default 2`] = `
+"import React from \\"react\\";
+var {
+  createElement: createElement
+} = React;"
+`;
+
+exports[`uses specified declaration token and \`const\` by default 3`] = `
+"import React from \\"react\\";
+let {
+  createElement: createElement
+} = React;"
+`;

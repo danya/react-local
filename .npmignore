@@ -1,4 +1,6 @@
 node_modules/
+__tests__/
+coverage/
 
 npm-debug.log
 yarn-error.log
