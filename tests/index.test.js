@@ -25,6 +25,18 @@ it('extracts React imports to local vars', async function() {
   expect(output).toMatchSnapshot()
 })
 
+it('uses specified name of default imported object', async function() {
+  const input = `import SomeName, {Fragment} from 'react'`
+  const output = await transform(input)
+  expect(output).toMatchSnapshot()
+})
+
+it('transforms namespaced import statement', async function() {
+  const input = `import * as React from 'react'`
+  const output = await transform(input)
+  expect(output).toMatchSnapshot()
+})
+
 it('always imports `createElement` if option is enabled', async function() {
   const input = `import React from 'react'`
   const output = await transform(input)

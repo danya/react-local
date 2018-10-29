@@ -35,6 +35,13 @@ const {
 } = React;"
 `;
 
+exports[`transforms namespaced import statement 1`] = `
+"import React from \\"react\\";
+const {
+  createElement: createElement
+} = React;"
+`;
+
 exports[`uses specified \`pragma\` and \`pragmaFrag\` 1`] = `
 "import React from \\"react\\";
 const {
@@ -62,4 +69,12 @@ exports[`uses specified declaration token and \`const\` by default 3`] = `
 let {
   createElement: createElement
 } = React;"
+`;
+
+exports[`uses specified name of default imported object 1`] = `
+"import SomeName from \\"react\\";
+const {
+  Fragment: Fragment,
+  createElement: createElement
+} = SomeName;"
 `;
