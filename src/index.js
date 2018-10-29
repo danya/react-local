@@ -14,7 +14,7 @@ module.exports = () => ({
       const {
         names,
         locals,
-        specifier = 'React'
+        identifier = 'React'
       } = getDataFromImportSpecifiers(path.node.specifiers)
 
       if (config.alwaysCreateElement && !names.includes('createElement'))
@@ -25,7 +25,7 @@ module.exports = () => ({
       if (names.length > 0) {
         // import statement
         const importNode = t.ImportDeclaration(
-          [t.importDefaultSpecifier(t.identifier(specifier))],
+          [t.importDefaultSpecifier(t.identifier(identifier))],
           t.stringLiteral('react')
         )
 
@@ -40,7 +40,7 @@ module.exports = () => ({
         const extractNode = t.variableDeclaration(config.declaration, [
           t.variableDeclarator(
             t.objectPattern(properties),
-            t.identifier(specifier)
+            t.identifier(identifier)
           )
         ])
 
@@ -68,11 +68,11 @@ function prepareConfig(options) {
 function getDataFromImportSpecifiers(specifiers) {
   // `import * as React from 'react'`
   if (specifiers[0].type === 'ImportNamespaceSpecifier') {
-    return { names: [], locals: [], specifier: specifiers[0].local.name }
+    return { names: [], locals: [], identifier: specifiers[0].local.name }
   }
   // `import React, {...} from 'react'`
   else {
-    const specifier =
+    const identifier =
       specifiers[0].type === 'ImportDefaultSpecifier'
         ? specifiers[0].local.name
         : undefined
@@ -81,6 +81,6 @@ function getDataFromImportSpecifiers(specifiers) {
     const names = namedSpecifiers.map(s => s.imported.name)
     const locals = namedSpecifiers.map(s => s.local.name)
 
-    return { names, locals, specifier }
+    return { names, locals, identifier }
   }
 }
