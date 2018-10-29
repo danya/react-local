@@ -10,51 +10,37 @@ module.exports = () => ({
       if (this.history.has(state.filename)) return
       if (path.node.source.value !== 'react') return
 
-      const pragmas = {
-        createElement: state.opts.pragma || 'createElement',
-        Fragment: state.opts.pragmaFrag || 'Fragment'
-      }
-
+      const config = prepareConfig(state.opts)
       const {
-        alwaysCreateElement = true,
-        alwaysFragment = false,
-        declaration = 'const'
-      } = state.opts
+        names,
+        locals,
+        specifier = 'React'
+      } = getDataFromImportSpecifiers(path.node.specifiers)
 
-      // Import specifiers
-      const names = []
-      const locals = []
-
-      path.node.specifiers
-        .filter(s => s.type === 'ImportSpecifier')
-        .forEach(({ imported, local }) => {
-          names.push(imported.name)
-          locals.push(imported.name !== local.name ? local.name : null)
-        })
-
-      if (alwaysCreateElement && names.indexOf('createElement') < 0) {
+      if (config.alwaysCreateElement && !names.includes('createElement'))
         names.push('createElement')
-      }
-
-      if (alwaysFragment && names.indexOf('Fragment') < 0) {
+      if (config.alwaysFragment && !names.includes('Fragment'))
         names.push('Fragment')
-      }
 
       if (names.length > 0) {
-        const importNode = t.importDeclaration(
-          [t.importDefaultSpecifier(t.identifier('React'))],
+        // import statement
+        const importNode = t.ImportDeclaration(
+          [t.importDefaultSpecifier(t.identifier(specifier))],
           t.stringLiteral('react')
         )
 
-        const properties = names.map((name, i) => {
-          const variable = locals[i] || pragmas[name] || name
-          return t.objectProperty(t.identifier(name), t.identifier(variable))
-        })
-
-        const extractNode = t.variableDeclaration(declaration, [
+        // extract object statement
+        const specified = locals.map((l, i) => (l !== names[i] ? l : null))
+        const properties = names.map((name, i) =>
+          t.objectProperty(
+            t.identifier(name),
+            t.identifier(specified[i] || config.pragmas[name] || name)
+          )
+        )
+        const extractNode = t.variableDeclaration(config.declaration, [
           t.variableDeclarator(
             t.objectPattern(properties),
-            t.identifier('React')
+            t.identifier(specifier)
           )
         ])
 
@@ -65,3 +51,36 @@ module.exports = () => ({
     }
   }
 })
+
+function prepareConfig(options) {
+  const pragmas = {
+    createElement: options.pragma,
+    Fragment: options.pragmaFrag
+  }
+  const {
+    alwaysCreateElement = true,
+    alwaysFragment = false,
+    declaration = 'const'
+  } = options
+  return { alwaysCreateElement, alwaysFragment, declaration, pragmas }
+}
+
+function getDataFromImportSpecifiers(specifiers) {
+  // `import * as React from 'react'`
+  if (specifiers[0].type === 'ImportNamespaceSpecifier') {
+    return { names: [], locals: [], specifier: specifiers[0].local.name }
+  }
+  // `import React, {...} from 'react'`
+  else {
+    const specifier =
+      specifiers[0].type === 'ImportDefaultSpecifier'
+        ? specifiers[0].local.name
+        : undefined
+
+    const namedSpecifiers = specifiers.filter(s => s.type === 'ImportSpecifier')
+    const names = namedSpecifiers.map(s => s.imported.name)
+    const locals = namedSpecifiers.map(s => s.local.name)
+
+    return { names, locals, specifier }
+  }
+}
