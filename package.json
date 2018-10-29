@@ -18,7 +18,7 @@
   "license": "MIT",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest ./tests --coverage"
   },
   "dependencies": {
     "@babel/types": "^7.1.3"

@@ -15,18 +15,18 @@ const {
 } = React;"
 `;
 
-exports[`do not always import \`createElement\` if option is disabled 1`] = `
+exports[`does not always import \`createElement\` if option is disabled 1`] = `
 "import React from \\"react\\";
 const {
   Fragment: Fragment
 } = React;"
 `;
 
-exports[`do not extract imports if it is not necessary 1`] = `"import React from 'react';"`;
+exports[`does not extract imports if it is not necessary 1`] = `"import React from 'react';"`;
 
-exports[`do nothing if source is not \`react\` 1`] = `"import { someFunction } from 'some-module';"`;
+exports[`does nothing if source is not \`react\` 1`] = `"import { someFunction } from 'some-module';"`;
 
-exports[`extract React imports to local vars 1`] = `
+exports[`extracts React imports to local vars 1`] = `
 "import React from \\"react\\";
 const {
   Fragment: Fragment,

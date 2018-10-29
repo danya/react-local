@@ -7,19 +7,19 @@ async function transform(input, options = {}) {
   }).code
 }
 
-it('do nothing if source is not `react`', async function() {
+it('does nothing if source is not `react`', async function() {
   const input = `import {someFunction} from 'some-module'`
   const output = await transform(input)
   expect(output).toMatchSnapshot()
 })
 
-it('do not extract imports if it is not necessary', async function() {
+it('does not extract imports if it is not necessary', async function() {
   const input = `import React from 'react'`
   const output = await transform(input, { alwaysCreateElement: false })
   expect(output).toMatchSnapshot()
 })
 
-it('extract React imports to local vars', async function() {
+it('extracts React imports to local vars', async function() {
   const input = `import {Fragment, Suspense} from 'react'`
   const output = await transform(input)
   expect(output).toMatchSnapshot()
@@ -31,7 +31,7 @@ it('always imports `createElement` if option is enabled', async function() {
   expect(output).toMatchSnapshot()
 })
 
-it('do not always import `createElement` if option is disabled', async function() {
+it('does not always import `createElement` if option is disabled', async function() {
   const input = `import React, {Fragment} from 'react'`
   const output = await transform(input, { alwaysCreateElement: false })
   expect(output).toMatchSnapshot()
