@@ -19,6 +19,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "jest ./tests --coverage",
+    "lint": "eslint ./src ./tests ./benchmarks/calculate",
     "spellcheck": "yaspeller-ci *.md"
   },
   "dependencies": {
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.1.2",
+    "eslint": "^5.8.0",
     "jest": "^23.6.0",
     "yaspeller-ci": "^1.0.0"
   }
