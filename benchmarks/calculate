@@ -1,0 +1,30 @@
+#!/usr/bin/node
+
+// prettier-ignore
+const properties = [
+  'createElement', 'Fragment', 'createRef', 'forwardRef',
+  'memo', 'lazy', 'StrictMode', 'Suspense', 'Profiler',
+  'useState', 'useRef', 'useEffect', 'useLayoutEffect',
+  'useMutationEffect', 'useContext', 'useReducer', 'useMemo',
+  'useCallback', 'useImperativeMethods'
+]
+
+const result = []
+
+for (let i = 0, l = properties.length; i < l; i++) {
+  // `o.a` is React default export object
+  // Call each time such way `o.a.createElement`
+  const withoutPlugin = Math.floor(1024 / `o.a.${properties[i]}`.length)
+  // Extract `const{createElement:l}=o.a` and then always use just `l`
+  const withPlugin = Math.floor(1024 - `const{${properties[i]}:l}=o.a`.length)
+
+  result.push({
+    property: properties[i],
+    'without plugin': withoutPlugin,
+    'with plugin': withPlugin
+  })
+}
+
+console.log('Count of repeats to reach 1 KB (higher is better)')
+console.table(result)
+console.log('* without parentheses, any parameters and semicolons')

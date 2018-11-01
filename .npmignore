@@ -1,8 +1,10 @@
 node_modules/
 __tests__/
 coverage/
+benchmarks/
 
 npm-debug.log
 yarn-error.log
 yarn.lock
 .gitignore
+.yaspellerrc

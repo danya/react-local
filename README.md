@@ -1,92 +1,69 @@
 # React Local
 
-Babel plugin for perfectionists that helps to slightly optimize React transforming your imports to local variables.
+Babel plugin that helps to optimize React application transforming your imports to local variables.
 
-- Reduce amount of code browser need to parse.
-- Much reduce size of non gzipped bundle and a bit of gzipped one in big projects — squeeze everything ([more](#size-improvements))
-- No extra triple property access every time: make calling of `createElement` faster in some browsers ([more](#speed-improvements))
+**It much reduces:**
 
-Note this plugin may not make huge effect you expect but may make some nice small improvements.
+- amount of code browser need to parse and compile ([see benchmarks](#benchmarks));
+- time of all JavaScript execution ([see theory](#theory)).
 
-**Input**:
+## Theory
 
-```jsx
-import React, { Fragment } from 'react'
+_The text and media is taken from the great [Jeremy Wagner's article](https://developers.google.com/web/fundamentals/performance/optimizing-javascript/tree-shaking/) on Web Fundamentals._
 
-const App = props => (
-  <>
-    <h1>Header</h1>
-    <p>Text</p>
-  </>
-)
-```
+JavaScript is an expensive resource to process. Unlike images which only incur relatively trivial decode time once downloaded, JavaScript must be parsed, compiled, and then finally executed. Byte for byte, this makes JavaScript more expensive than other types of resources.
 
-**Output** (with external preset/plugin for transforming JSX):
+JavaScript is often compressed when sent over the network, meaning that the actual amount of JavaScript is quite a bit more after the browser decompresses it. But as far as resource processing is concerned, compression is irrelevant. 900 KB of decompressed JavaScript is still 900 KB to the parser and compiler, even though it may be ~300 KB when compressed.
 
-- with `react-local` and right configured JSX plugin:
+<center>
+<img alt="js-stage" src="https://developers.google.com/web/fundamentals/performance/optimizing-javascript/tree-shaking/images/figure-1.svg" width="650"/>
+</center>
 
-```javascript
-import React from 'react'
-const { createElement: createElement, Fragment: Fragment } = React
+## Improvements
 
-const App = props =>
-  createElement(
-    Fragment,
-    null,
-    createElement('h1', null, 'Header'),
-    createElement('p', null, 'Text')
-  )
-```
+> **TL;DR**
+>
+> - almost no effect for transfer JavaScript size/time;
+> - very good improvements of parse, compile and execution size/time.
 
-- without `react-local`:
+When using React, a lot of extra code is created. See [Dan Abramov's tweets](https://twitter.com/dan_abramov/status/841266032576724992) to find more about it.
 
-```javascript
-import React from 'react'
+There is almost no size effect of `react-local` for transfer size of JS if you use gzip or brotli because they usually work fairly well for repeated strings.
 
-const App = props =>
-  React.createElement(
-    React.Fragment,
-    null,
-    React.createElement('h1', null, 'Header'),
-    React.createElement('p', null, 'Text')
-  )
-```
+But using `react-local` you can easily reduce size of JavaScript browser need to parse, compile and execute and therefore reduce time of JS processing. For example, `react-local` reduces ~1 KB for each ~62 calling of `createElement`.
 
-### Speed improvements
+### Benchmarks
 
-Using JSX you often call the same function, but always directly (`o.a.createElement`) — a lot of extra property access every time. Using local variable to access the same property can give some benefit ([see benchmarks](https://jsperf.com/call-to-object-method)):
+**Count of repeats to reach 1 KB** (higher is better)
 
-- **Chrome and Opera**: using local var is **40% faster**.
-- **Chrome Mobile**: using local var is **55% faster**.
-- **Firefox**: result are almost the same (local variable is fater for a few percent only).
-- **Safari** and **Safari Mobile**: unfortunately, using local variable is _~7% slower_.
+|   Property    | Without plugin | With plugin |
+| :-----------: | :------------: | :---------: |
+| createElement |      ~60       |    ~998     |
+|   useState    |      ~85       |    ~1003    |
+|   useEffect   |      ~78       |    ~1002    |
+|   Fragment    |      ~85       |    ~1003    |
 
-Note that just mechanism of property access was tested and real usage of local variable with React may have different results.
+_\* without parentheses, any parameters and semicolons. You can find more [here](/benchmarks/benchmarks/)._
 
-### Size improvements
+### Explanation
 
-Amount of code browser need to parse is less anyway.
+Just let's analyze minified version of codes above created by Webpack production mode. The difference between these two results is ability of UglifyJS to change names of React properties to shorter one.
 
-Honestly, there is **almost NO size effect if you use gzip** because gzip usually works fairly well for repeated strings.
-But if you do not (why?!) it can help your to reduce bundle size (just always `l` instead of always `o.a.createElement`, so about -1KB for each 64 calling of `createElement`).
-
-Let's analyze minified version of codes above created by Webpack production mode. (`React.default` showed here as not minified for better understanding, in real bundle it will something like `o.a`). The difference between these two results is ability of UglifyJS to change names of React properties to shorter one.
-
-- with `react-local`:
+- with `react-local`
 
 ```javascript
-const { Fragment: u, createElement: l } = React.default
+const { Fragment: u, createElement: l } = o.a // React.default
 const a = l(u, null, l('h1', null, 'Header'), l('p', null, 'Text'))
 ```
 
-- without `react-local`:
+- without `react-local`
 
 ```javascript
-const a = React.default.createElement(
-  React.default.Fragment,
+const a = o.a.createElement(
+  o.a.Fragment,
   null,
-  React.default.createElement('h1', null, 'Header'),
-  React.default.createElement('p', null, 'Text')
+  o.a.createElement('h1', null, 'Header'),
+  o.a.createElement('p', null, 'Text')
 )
 ```
 
@@ -98,6 +75,8 @@ yarn add --dev babel-plugin-react-local
 ```
 
 ## Usage
+
+### Remarks
 
 **NB**: `react-local` works only with ES6 Modules because it looks for `import` statement.
 
@@ -113,6 +92,8 @@ yarn add --dev babel-plugin-react-local
 
 - use code inside non-global scope (inside function for example). Webpack and other bundlers will wrap you code automatically, only if you don't use it you need to take care of wrapping.
 - use `toplevel` flag in UglifyJS.
+
+### Babel configuration
 
 To use this plugin you need:
 
@@ -150,8 +131,8 @@ Available plugin options:
 
 There are also some other ways do something like this plugin do:
 
-- webpack + `@babel/preset-react` — see [article](https://medium.com/@jilizart/reduce-the-size-of-final-jsx-code-c39effca906f)
-- webpack `jsx-compress-loader` — see [repository](https://github.com/theKashey/jsx-compress-loader)
+- `@babel/preset-react` + `webpack.ProvidePlugin` — see [article](https://medium.com/@jilizart/reduce-the-size-of-final-jsx-code-c39effca906f)
+- `jsx-compress-loader` for webpack — see [repository](https://github.com/theKashey/jsx-compress-loader)
 
 ## License
 
