@@ -1,23 +1,23 @@
 # React Local
 
-Babel plugin that helps to optimize React application transforming your imports to local variables.
+Babel plugin that helps to speed up your React application transforming your imports to local variables.
 
 **It much reduces:**
 
-- amount of code browser need to parse and compile ([see benchmarks](#benchmarks));
-- time of all JavaScript execution ([see theory](#theory)).
+- **amount of code browser need to parse and compile** (see [benchmarks](#benchmarks) and [explanation](#explanation))
+- and therefore **time of all JavaScript execution** ([see theory](#theory))
 
 ## Theory
 
-_The text and media is taken from the great [Jeremy Wagner's article](https://developers.google.com/web/fundamentals/performance/optimizing-javascript/tree-shaking/) on Web Fundamentals._
+_The text and media is taken from the [Jeremy Wagner's article](https://developers.google.com/web/fundamentals/performance/optimizing-javascript/tree-shaking/) on Web Fundamentals and Addy Osmani's article "[The Cost of JavaScript](https://medium.com/dev-channel/the-cost-of-javascript-84009f51e99e)"._
 
-JavaScript is an expensive resource to process. Unlike images which only incur relatively trivial decode time once downloaded, JavaScript must be parsed, compiled, and then finally executed. Byte for byte, this makes JavaScript more expensive than other types of resources.
+JavaScript is an expensive resource to process. Unlike images which only incur relatively trivial decode time once downloaded, JavaScript must be parsed, compiled, and then finally executed. **It is the heaviest time costs of JS**. Byte for byte, this makes JavaScript more expensive than other types of resources.
 
 JavaScript is often compressed when sent over the network, meaning that the actual amount of JavaScript is quite a bit more after the browser decompresses it. But as far as resource processing is concerned, compression is irrelevant. 900 KB of decompressed JavaScript is still 900 KB to the parser and compiler, even though it may be ~300 KB when compressed.
 
-<center>
 <img alt="js-stage" src="https://developers.google.com/web/fundamentals/performance/optimizing-javascript/tree-shaking/images/figure-1.svg" width="650"/>
-</center>
+
+For example see also time cost difference between JavaScript and image with the same transfer size [here](https://cdn-images-1.medium.com/max/1600/1*PRVzNizF9jQ_QADF5lQHpA.png).
 
 ## Improvements
 
@@ -26,7 +26,7 @@ JavaScript is often compressed when sent over the network, meaning that the actu
 > - almost no effect for transfer JavaScript size/time;
 > - very good improvements of parse, compile and execution size/time.
 
-When using React, a lot of extra code is created. See [Dan Abramov's tweets](https://twitter.com/dan_abramov/status/841266032576724992) to find more about it.
+When using React, a lot of extra code is created because React uses `React.createElement` pragma for JSX and it (and other imports) cannot be well mangled ([see below](#explanation) why). It is not good for your app for JS execution time and therefore for speed of your application.
 
 There is almost no size effect of `react-local` for transfer size of JS if you use gzip or brotli because they usually work fairly well for repeated strings.
 
@@ -34,7 +34,7 @@ But using `react-local` you can easily reduce size of JavaScript browser need to
 
 ### Benchmarks
 
-**Count of repeats to reach 1 KB** (higher is better)
+**Count of repeats to reach 1 KB inside one file** (higher is better)
 
 |   Property    | Without plugin | With plugin |
 | :-----------: | :------------: | :---------: |
@@ -47,7 +47,11 @@ _\* without parentheses, any parameters and semicolons. You can find more [here]
 
 ### Explanation
 
-Just let's analyze minified version of codes above created by Webpack production mode. The difference between these two results is ability of UglifyJS to change names of React properties to shorter one.
+Such results are explained by the fact that the difference between these two results is ability of minifiers (e.g. UglifyJS, Terser) to change names of React properties to shorter one.
+
+When you use standard options of Babel minifiers don’t know `.default.createElement` or similar property is constant so it can’t mangle property access. But when using `react-local` you can solve this problem. This works because your imports are assigned to a local variables, and then used multiple times. So minifiers can mangle the variable name.
+
+Just let's see on minified version of codes above created by Webpack production mode:
 
 - with `react-local`
 
@@ -88,10 +92,10 @@ yarn add --dev babel-plugin-react-local
 
 **NB**: to get effect of `react-local` do not access properties via default imported React object (`React.*`), use named imports (just `StrictMode`, `Fragment` etc.)
 
-**NB**: there are two ways to get effect of UglifyJS minification of variable names:
+**NB**: there are two ways to get effect of UglifyJS or Terser minification of variable names:
 
 - use code inside non-global scope (inside function for example). Webpack and other bundlers will wrap you code automatically, only if you don't use it you need to take care of wrapping.
-- use `toplevel` flag in UglifyJS.
+- use `toplevel` flag in UglifyJS/Terser.
 
 ### Babel configuration
 

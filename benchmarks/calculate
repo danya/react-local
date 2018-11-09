@@ -26,6 +26,6 @@ for (let i = 0, l = properties.length; i < l; i++) {
 }
 
 /* eslint-disable no-console */
-console.log('Count of repeats to reach 1 KB (higher is better)')
+console.log('Count of repeats to reach 1 KB inside one file (higher is better)')
 console.table(result)
 console.log('* without parentheses, any parameters and semicolons')

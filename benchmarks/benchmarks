@@ -1,4 +1,4 @@
-Count of repeats to reach 1 KB (higher is better)
+Count of repeats to reach 1 KB inside one file (higher is better)
 ┌─────────┬────────────────────────┬────────────────┬─────────────┐
 │ (index) │        property        │ without plugin │ with plugin │
 ├─────────┼────────────────────────┼────────────────┼─────────────┤
