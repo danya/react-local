@@ -11,40 +11,38 @@ module.exports = () => ({
       if (path.node.source.value !== 'react') return
 
       const config = prepareConfig(state.opts)
-      const {
-        names,
-        locals,
-        identifier = 'React'
-      } = getDataFromImportSpecifiers(path.node.specifiers)
+      const { imported, locals, identifier } = getDataFromImportNode(path.node)
 
-      if (config.alwaysCreateElement && !names.includes('createElement'))
-        names.push('createElement')
-      if (config.alwaysFragment && !names.includes('Fragment'))
-        names.push('Fragment')
+      if (config.alwaysCreateElement && !imported.includes('createElement'))
+        imported.push('createElement')
+      if (config.alwaysFragment && !imported.includes('Fragment'))
+        imported.push('Fragment')
 
-      if (names.length > 0) {
+      if (imported.length > 0) {
+        const variable = identifier || 'React'
+
         // import statement
         const importNode = t.ImportDeclaration(
-          [t.importDefaultSpecifier(t.identifier(identifier))],
+          [t.importDefaultSpecifier(t.identifier(variable))],
           t.stringLiteral('react')
         )
 
         // extract object statement
-        const specified = locals.map((l, i) => (l !== names[i] ? l : null))
-        const properties = names.map((name, i) =>
+        const specified = locals.map((l, i) => (l !== imported[i] ? l : null))
+        const properties = imported.map((name, i) =>
           t.objectProperty(
             t.identifier(name),
             t.identifier(specified[i] || config.pragmas[name] || name)
           )
         )
-        const extractNode = t.variableDeclaration(config.declaration, [
+        const declarationNode = t.variableDeclaration(config.declaration, [
           t.variableDeclarator(
             t.objectPattern(properties),
-            t.identifier(identifier)
+            t.identifier(variable)
           )
         ])
 
-        path.replaceWithMultiple([importNode, extractNode])
+        path.replaceWithMultiple([importNode, declarationNode])
       }
 
       this.history.add(state.filename)
@@ -65,10 +63,12 @@ function prepareConfig(options) {
   return { alwaysCreateElement, alwaysFragment, declaration, pragmas }
 }
 
-function getDataFromImportSpecifiers(specifiers) {
+function getDataFromImportNode(node) {
+  const { specifiers } = node
+
   // `import * as React from 'react'`
   if (specifiers[0].type === 'ImportNamespaceSpecifier') {
-    return { names: [], locals: [], identifier: specifiers[0].local.name }
+    return { imported: [], locals: [], identifier: specifiers[0].local.name }
   }
   // `import React, {...} from 'react'`
   else {
@@ -78,9 +78,9 @@ function getDataFromImportSpecifiers(specifiers) {
         : undefined
 
     const namedSpecifiers = specifiers.filter(s => s.type === 'ImportSpecifier')
-    const names = namedSpecifiers.map(s => s.imported.name)
+    const imported = namedSpecifiers.map(s => s.imported.name)
     const locals = namedSpecifiers.map(s => s.local.name)
 
-    return { names, locals, identifier }
+    return { imported, locals, identifier }
   }
 }
