@@ -1,6 +1,6 @@
 # React Local
 
-Babel plugin that helps to speed up your React application transforming your imports to local variables.
+Babel plugin that helps to **speed up your React application** transforming your imports to local variables.
 
 **It much reduces:**
 

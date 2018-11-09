@@ -1,13 +1,14 @@
 {
   "name": "babel-plugin-react-local",
   "version": "0.3.0",
-  "description": "Babel plugin that helps to optimize React application transforming your imports to local variables.",
+  "description": "Babel plugin that helps to speed up React application transforming your imports to local variables.",
   "keywords": [
     "react",
     "jsx",
     "compress",
     "optimization",
-    "size"
+    "size",
+    "speed"
   ],
   "repository": "https://github.com/philosaf/react-local",
   "homepage": "https://github.com/philosaf/react-local#readme",
