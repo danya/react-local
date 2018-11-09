@@ -9,3 +9,4 @@ yarn.lock
 .gitignore
 .yaspellerrc
 .eslintrc.json
+.travis.yml

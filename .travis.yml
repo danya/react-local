@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+  - "10"
+  - "8"
+cache: yarn
+script:
+  - yarn
+  - yarn spellcheck
+  - yarn lint
+  - yarn test
