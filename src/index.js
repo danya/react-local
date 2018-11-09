@@ -66,21 +66,18 @@ function prepareConfig(options) {
 function getDataFromImportNode(node) {
   const { specifiers } = node
 
-  // `import * as React from 'react'`
-  if (specifiers[0].type === 'ImportNamespaceSpecifier') {
-    return { imported: [], locals: [], identifier: specifiers[0].local.name }
-  }
-  // `import React, {...} from 'react'`
-  else {
-    const identifier =
-      specifiers[0].type === 'ImportDefaultSpecifier'
-        ? specifiers[0].local.name
-        : undefined
+  const identifier =
+    // import * as React from 'react'
+    specifiers[0].type === 'ImportNamespaceSpecifier' ||
+    // import React, {...} from 'react'
+    specifiers[0].type === 'ImportDefaultSpecifier'
+      ? specifiers[0].local.name
+      : // import {...} from 'react'
+        undefined
 
-    const namedSpecifiers = specifiers.filter(s => s.type === 'ImportSpecifier')
-    const imported = namedSpecifiers.map(s => s.imported.name)
-    const locals = namedSpecifiers.map(s => s.local.name)
+  const namedSpecifiers = specifiers.filter(s => s.type === 'ImportSpecifier')
+  const imported = namedSpecifiers.map(s => s.imported.name)
+  const locals = namedSpecifiers.map(s => s.local.name)
 
-    return { imported, locals, identifier }
-  }
+  return { imported, locals, identifier }
 }
