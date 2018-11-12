@@ -67,13 +67,10 @@ function getDataFromImportNode(node) {
   const { specifiers } = node
 
   const identifier =
-    // import * as React from 'react'
-    specifiers[0].type === 'ImportNamespaceSpecifier' ||
-    // import React, {...} from 'react'
-    specifiers[0].type === 'ImportDefaultSpecifier'
+    t.isImportNamespaceSpecifier(specifiers[0]) ||
+    t.isImportDefaultSpecifier(specifiers[0])
       ? specifiers[0].local.name
-      : // import {...} from 'react'
-        undefined
+      : undefined
 
   const namedSpecifiers = specifiers.filter(s => s.type === 'ImportSpecifier')
   const imported = namedSpecifiers.map(s => s.imported.name)
