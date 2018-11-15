@@ -1,80 +1,102 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`always imports \`Fragment\` if option is enabled 1`] = `
-"import React from \\"react\\";
-const {
-  createElement: createElement,
-  Fragment: Fragment
-} = React;"
-`;
-
-exports[`always imports \`createElement\` if option is enabled 1`] = `
+exports[`automatically extracts \`createElement\` if JSX is used twice or more 1`] = `
 "import React from \\"react\\";
 const {
   createElement: createElement
-} = React;"
+} = React;
+const Header = createElement(\\"h1\\", null, \\"Text\\");
+const Content = createElement(\\"p\\", null, \\"Text\\");"
 `;
 
-exports[`does not always import \`createElement\` if option is disabled 1`] = `
-"import React from \\"react\\";
+exports[`automatically imports \`Fragment\` if it is used 1`] = `
+"import React, { Fragment } from \\"react\\";
 const {
-  Fragment: Fragment
-} = React;"
+  createElement: createElement
+} = React;
+const Content = createElement(Fragment, null, createElement(\\"h1\\", null, \\"Text\\"), createElement(\\"p\\", null, \\"Text\\"));"
 `;
 
-exports[`does not extract imports if it is not necessary 1`] = `"import React from 'react';"`;
+exports[`automatically imports \`createElement\` if JSX is used once 1`] = `
+"import React, { createElement } from \\"react\\";
+const Header = createElement(\\"h1\\", null, \\"Text\\");"
+`;
+
+exports[`does not extract imports if there are no imports 1`] = `"import React from \\"react\\";"`;
+
+exports[`does not extract imports if they are not used 1`] = `"import React from \\"react\\";"`;
 
 exports[`does nothing if source is not \`react\` 1`] = `"import { someFunction } from 'some-module';"`;
 
-exports[`extracts React imports to local vars 1`] = `
+exports[`extracts properties if they are used twice or more 1`] = `
 "import React from \\"react\\";
 const {
-  Fragment: Fragment,
-  Suspense: Suspense,
-  createElement: createElement
-} = React;"
+  useState: useState
+} = React;
+const [color, setColor] = useState('red');
+const [count, setCount] = useState(0);"
+`;
+
+exports[`imports properties if they are used once 1`] = `
+"import React, { useState } from \\"react\\";
+const [color, setColor] = useState('red');"
 `;
 
 exports[`transforms namespaced import statement 1`] = `
 "import React from \\"react\\";
 const {
   createElement: createElement
-} = React;"
-`;
-
-exports[`uses specified \`pragma\` and \`pragmaFrag\` 1`] = `
-"import React from \\"react\\";
-const {
-  Fragment: specifiedFragment,
-  createElement: specifiedCE
-} = React;"
+} = React;
+const Header = createElement(\\"h1\\", null, \\"Text\\");
+const Content = createElement(\\"p\\", null, \\"Text\\");"
 `;
 
 exports[`uses specified declaration token and \`const\` by default 1`] = `
 "import React from \\"react\\";
 const {
   createElement: createElement
-} = React;"
+} = React;
+const Header = createElement(\\"h1\\", null, \\"Text\\");
+const Content = createElement(\\"p\\", null, \\"Text\\");"
 `;
 
 exports[`uses specified declaration token and \`const\` by default 2`] = `
 "import React from \\"react\\";
 var {
   createElement: createElement
-} = React;"
+} = React;
+const Header = createElement(\\"h1\\", null, \\"Text\\");
+const Content = createElement(\\"p\\", null, \\"Text\\");"
 `;
 
 exports[`uses specified declaration token and \`const\` by default 3`] = `
 "import React from \\"react\\";
 let {
   createElement: createElement
-} = React;"
+} = React;
+const Header = createElement(\\"h1\\", null, \\"Text\\");
+const Content = createElement(\\"p\\", null, \\"Text\\");"
+`;
+
+exports[`uses specified local name of extracted properties 1`] = `
+"import React from \\"react\\";
+const {
+  useState: state
+} = React;
+const [color, setColor] = state('red');
+const [count, setCount] = state(0);"
+`;
+
+exports[`uses specified local name of imported properties 1`] = `
+"import React, { useState as state } from \\"react\\";
+const [color, setColor] = state('red');"
 `;
 
 exports[`uses specified name of default imported object 1`] = `
-"import SomeName from \\"react\\";
+"import MyReact from \\"react\\";
 const {
-  Fragment: Fragment,
   createElement: createElement
-} = SomeName;"
+} = MyReact;
+const Header = createElement(\\"h1\\", null, \\"Text\\");
+const Content = createElement(\\"p\\", null, \\"Text\\");"
 `;

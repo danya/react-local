@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.1.2",
+    "@babel/preset-react": "^7.0.0",
     "eslint": "^5.8.0",
     "jest": "^23.6.0",
     "yaspeller-ci": "^1.0.0"
