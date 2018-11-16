@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`automatically extracts \`createElement\` if JSX is used twice or more 1`] = `
+exports[`automatically extracts \`createElement\` if JSX is used 1`] = `
 "import React from \\"react\\";
 const {
   createElement: createElement
@@ -9,17 +9,17 @@ const Header = createElement(\\"h1\\", null, \\"Text\\");
 const Content = createElement(\\"p\\", null, \\"Text\\");"
 `;
 
-exports[`automatically imports \`Fragment\` if it is used 1`] = `
+exports[`automatically imports \`createElement\` if JSX is used less than specified 1`] = `
+"import React, { createElement } from \\"react\\";
+const Header = createElement(\\"h1\\", null, \\"Text\\");"
+`;
+
+exports[`automatically imports/extracts \`Fragment\` if it is used 1`] = `
 "import React, { Fragment } from \\"react\\";
 const {
   createElement: createElement
 } = React;
 const Content = createElement(Fragment, null, createElement(\\"h1\\", null, \\"Text\\"), createElement(\\"p\\", null, \\"Text\\"));"
-`;
-
-exports[`automatically imports \`createElement\` if JSX is used once 1`] = `
-"import React, { createElement } from \\"react\\";
-const Header = createElement(\\"h1\\", null, \\"Text\\");"
 `;
 
 exports[`does not extract imports if there are no imports 1`] = `"import React from \\"react\\";"`;
@@ -37,7 +37,7 @@ const [color, setColor] = useState('red');
 const [count, setCount] = useState(0);"
 `;
 
-exports[`imports properties if they are used once 1`] = `
+exports[`imports properties if they are used less than specfied 1`] = `
 "import _React, { useState } from \\"react\\";
 const [color, setColor] = useState('red');"
 `;

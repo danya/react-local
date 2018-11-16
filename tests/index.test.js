@@ -23,12 +23,12 @@ it('does not extract imports if they are not used', async function() {
   expect(await transform(input)).toMatchSnapshot()
 })
 
-it('imports properties if they are used once', async function() {
+it('imports properties if they are used less than specfied', async function() {
   const input = `
     import {useState} from 'react'
     const [color, setColor] = useState('red')
   `
-  expect(await transform(input)).toMatchSnapshot()
+  expect(await transform(input, { extract: 2 })).toMatchSnapshot()
 })
 
 it('extracts properties if they are used twice or more', async function() {
@@ -40,15 +40,15 @@ it('extracts properties if they are used twice or more', async function() {
   expect(await transform(input)).toMatchSnapshot()
 })
 
-it('automatically imports `createElement` if JSX is used once', async function() {
+it('automatically imports `createElement` if JSX is used less than specified', async function() {
   const input = `
     import React from 'react'
     const Header = <h1>Text</h1>
   `
-  expect(await transform(input)).toMatchSnapshot()
+  expect(await transform(input, { extract: 2 })).toMatchSnapshot()
 })
 
-it('automatically extracts `createElement` if JSX is used twice or more', async function() {
+it('automatically extracts `createElement` if JSX is used', async function() {
   const input = `
     import React from 'react'
     const Header = <h1>Text</h1>
@@ -57,7 +57,7 @@ it('automatically extracts `createElement` if JSX is used twice or more', async 
   expect(await transform(input)).toMatchSnapshot()
 })
 
-it('automatically imports `Fragment` if it is used', async function() {
+it('automatically imports/extracts `Fragment` if it is used', async function() {
   const input = `
     import React from 'react'
     const Content = (
@@ -67,7 +67,7 @@ it('automatically imports `Fragment` if it is used', async function() {
       </>
     )
   `
-  expect(await transform(input)).toMatchSnapshot()
+  expect(await transform(input, { extract: 2 })).toMatchSnapshot()
 })
 
 it('uses specified local name of imported properties', async function() {
@@ -75,7 +75,7 @@ it('uses specified local name of imported properties', async function() {
     import {useState as state} from 'react'
     const [color, setColor] = state('red')
   `
-  expect(await transform(input)).toMatchSnapshot()
+  expect(await transform(input, { extract: 2 })).toMatchSnapshot()
 })
 
 it('uses specified local name of extracted properties', async function() {
