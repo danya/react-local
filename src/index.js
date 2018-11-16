@@ -50,7 +50,9 @@ module.exports = () => ({
         }
       }
 
-      const identifier = t.identifier(variable || 'React')
+      const identifier = variable
+        ? t.identifier(variable)
+        : path.scope.generateUidIdentifier('React')
       const importNode = createImportNode(identifier, imports, 'react')
       const extractNode =
         Object.keys(extract).length > 0

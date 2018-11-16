@@ -24,21 +24,21 @@ const Header = createElement(\\"h1\\", null, \\"Text\\");"
 
 exports[`does not extract imports if there are no imports 1`] = `"import React from \\"react\\";"`;
 
-exports[`does not extract imports if they are not used 1`] = `"import React from \\"react\\";"`;
+exports[`does not extract imports if they are not used 1`] = `"import _React from \\"react\\";"`;
 
 exports[`does nothing if source is not \`react\` 1`] = `"import { someFunction } from 'some-module';"`;
 
 exports[`extracts properties if they are used twice or more 1`] = `
-"import React from \\"react\\";
+"import _React from \\"react\\";
 const {
   useState: useState
-} = React;
+} = _React;
 const [color, setColor] = useState('red');
 const [count, setCount] = useState(0);"
 `;
 
 exports[`imports properties if they are used once 1`] = `
-"import React, { useState } from \\"react\\";
+"import _React, { useState } from \\"react\\";
 const [color, setColor] = useState('red');"
 `;
 
@@ -79,16 +79,16 @@ const Content = createElement(\\"p\\", null, \\"Text\\");"
 `;
 
 exports[`uses specified local name of extracted properties 1`] = `
-"import React from \\"react\\";
+"import _React from \\"react\\";
 const {
   useState: state
-} = React;
+} = _React;
 const [color, setColor] = state('red');
 const [count, setCount] = state(0);"
 `;
 
 exports[`uses specified local name of imported properties 1`] = `
-"import React, { useState as state } from \\"react\\";
+"import _React, { useState as state } from \\"react\\";
 const [color, setColor] = state('red');"
 `;
 
