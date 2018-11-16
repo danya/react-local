@@ -1,14 +1,12 @@
 const t = require('@babel/types')
 
-module.exports = () => ({
-  pre() {
-    this.history = new Set()
-  },
+const VISITED = Symbol()
 
+module.exports = () => ({
   visitor: {
     ImportDeclaration(path, state) {
-      if (this.history.has(state.filename)) return
       if (path.node.source.value !== 'react') return
+      if (path.node[VISITED]) return
 
       const options = deriveOptions(state.opts)
 
@@ -54,13 +52,13 @@ module.exports = () => ({
         ? t.identifier(variable)
         : path.scope.generateUidIdentifier('React')
       const importNode = createImportNode(identifier, imports, 'react')
+      importNode[VISITED] = true
       const extractNode =
         Object.keys(extract).length > 0
           ? createExtractNode(options.declaration, identifier, extract)
           : null
 
       path.replaceWithMultiple([importNode, extractNode].filter(Boolean))
-      this.history.add(state.filename)
     },
 
     MemberExpression(path) {
