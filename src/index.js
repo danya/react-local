@@ -8,7 +8,7 @@ module.exports = () => ({
       if (path.node.source.value !== 'react') return
       if (path.node[VISITED]) return
 
-      const options = deriveOptions(state.opts)
+      const options = { declaration: 'const', extract: 'all', ...state.opts }
 
       const {
         variable,
@@ -25,8 +25,8 @@ module.exports = () => ({
       }
 
       const ast = JSON.parse(JSON.stringify(path.parent))
-      const importIndex = path.parent.body.indexOf(path.node)
-      ast.body[importIndex] = {}
+      const currentNodeIndex = path.parent.body.indexOf(path.node)
+      ast.body[currentNodeIndex] = null
       const amount = getAmountOfUse(locals, ast)
 
       const imports = {}
@@ -75,10 +75,6 @@ module.exports = () => ({
   }
 })
 
-function deriveOptions(options) {
-  return { declaration: 'const', extract: 'all', ...options }
-}
-
 function getDataFromImportNode(node) {
   const { specifiers } = node
 
@@ -100,17 +96,16 @@ function emulateImportSpecifier(name) {
 
 function getAmountOfUse(names, ast) {
   const amount = {}
+  const increment = prop => (amount[prop] = (amount[prop] || 0) + 1)
   t.traverse(ast, {
     enter(path) {
-      // TODO: Rewrite it
       if (names.includes(path.name) && t.isIdentifier(path)) {
-        const name = path.name
-        amount[name] = (amount[name] || 0) + 1
+        increment(path.name)
       } else if (t.isJSXElement(path)) {
-        amount.createElement = (amount.createElement || 0) + 1
+        increment('createElement')
       } else if (t.isJSXFragment(path)) {
-        amount.createElement = (amount.createElement || 0) + 1
-        amount.Fragment = (amount.Fragment || 0) + 1
+        increment('createElement')
+        increment('Fragment')
       }
     }
   })
