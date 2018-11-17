@@ -1,5 +1,5 @@
 node_modules/
-__tests__/
+tests/
 coverage/
 benchmarks/
 
