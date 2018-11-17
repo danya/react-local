@@ -103,6 +103,10 @@ function getAmountOfUse(names, ast) {
         increment(path.name)
       } else if (t.isJSXElement(path)) {
         increment('createElement')
+        const name = path.openingElement.name.name
+        if (names.includes(name)) {
+          increment(name)
+        }
       } else if (t.isJSXFragment(path)) {
         increment('createElement')
         increment('Fragment')
