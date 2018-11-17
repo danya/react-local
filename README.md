@@ -99,24 +99,13 @@ yarn add --dev babel-plugin-react-local
 
 ### Babel configuration
 
-To use this plugin you need:
-
-- put `react-local` to `plugins` field in Babel configuration
-- change `pragma` and `pragmaFrag` in configuration of `@babel/preset-react` or `@babel/plugin-transform-react-jsx`. It's necessary because `react-local` extracts properties of React as simple local variables. By default names of these variables will be equal to properties names, so if you do not configure `react-local` just change these options to `createElement` and `Fragment`. Otherwise, keep these names synchronized (see [options](#Options)).
+To use this plugin just put `react-local` to `plugins` field in Babel configuration. **It works out of box!**
 
 Example of Babel configuration:
 
 ```javascript
 module.exports = {
-  presets: [
-    [
-      '@babel/preset-react',
-      {
-        pragma: 'createElement',
-        pragmaFrag: 'Fragment'
-      }
-    ]
-  ],
+  presets: ['@babel/react'],
   plugins: ['react-local']
 }
 ```
@@ -125,10 +114,7 @@ module.exports = {
 
 Available plugin options:
 
-- `pragma` (string) - local variable name for `React.createElement` (default to `createElement`)
-- `pragmaFrag` (string) - local variable name for `React.Fragment` (defaults to `Fragment`)
-- `alwaysCreateElement` (boolean) - always import `createElement` even if it is not defined in import statement (defaults to `true`).
-- `alwaysFragment` (boolean) - always import `Fragment` even if it is not defined in import statement (defaults to `false`).
+- `extract` `('all' | number)` - count of usage imported React property in document to bind it to a local variable, if `all` is passed all imports will be bound to variable (defaults to `all`)
 - `declaration` (`'var' | 'let' | 'const'`) - token used for variable declaration (defaults to `const`).
 
 ## Other ways
