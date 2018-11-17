@@ -21,13 +21,15 @@
   "scripts": {
     "test": "jest ./tests --coverage",
     "lint": "eslint ./src ./tests ./benchmarks/calculate",
-    "spellcheck": "yaspeller-ci *.md"
+    "spellcheck": "yaspeller-ci *.md",
+    "sandbox": "node ./tests/sandbox.js"
   },
   "dependencies": {
     "@babel/types": "^7.1.3"
   },
   "devDependencies": {
     "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.6",
     "@babel/preset-react": "^7.0.0",
     "eslint": "^5.8.0",
     "jest": "^23.6.0",
