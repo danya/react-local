@@ -118,3 +118,14 @@ it('uses specified declaration token and `const` by default', function() {
   const outputLet = transform(input, { declaration: 'let' })
   expect(outputLet).toMatchSnapshot()
 })
+
+it('injects `createElement` and `Fragment` only once per file', function() {
+  const input = `
+    import React from 'react'
+    import {useState} from 'react'
+    const state = useState(0)
+    const Fragment = <></>
+    const Element = <h1></h1>
+  `
+  expect(transform(input)).toMatchSnapshot()
+})

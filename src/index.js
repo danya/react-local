@@ -3,6 +3,10 @@ const t = require('@babel/types')
 const VISITED = Symbol()
 
 module.exports = () => ({
+  pre() {
+    this.injected = new Set()
+  },
+
   visitor: {
     ImportDeclaration(path, state) {
       if (path.node.source.value !== 'react') return
@@ -17,11 +21,14 @@ module.exports = () => ({
         locals
       } = getDataFromImportNode(path.node)
 
-      if (!imported.includes('createElement')) {
-        namedSpecifiers.push(emulateImportSpecifier('createElement'))
-      }
-      if (!imported.includes('Fragment')) {
-        namedSpecifiers.push(emulateImportSpecifier('Fragment'))
+      if (!this.injected.has(state.filename)) {
+        if (!imported.includes('createElement')) {
+          namedSpecifiers.push(emulateImportSpecifier('createElement'))
+        }
+        if (!imported.includes('Fragment')) {
+          namedSpecifiers.push(emulateImportSpecifier('Fragment'))
+        }
+        this.injected.add(state.filename)
       }
 
       const ast = JSON.parse(JSON.stringify(path.parent))

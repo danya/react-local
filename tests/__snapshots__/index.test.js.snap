@@ -42,6 +42,21 @@ exports[`imports properties if they are used less than specfied 1`] = `
 const [color, setColor] = useState('red');"
 `;
 
+exports[`injects \`createElement\` and \`Fragment\` only once per file 1`] = `
+"import React from \\"react\\";
+const {
+  createElement: createElement,
+  Fragment: Fragment
+} = React;
+import _React from \\"react\\";
+const {
+  useState: useState
+} = _React;
+const state = useState(0);
+const Fragment = createElement(Fragment, null);
+const Element = createElement(\\"h1\\", null);"
+`;
+
 exports[`transforms namespaced import statement 1`] = `
 "import React from \\"react\\";
 const {
