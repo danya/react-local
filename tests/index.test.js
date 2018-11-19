@@ -124,8 +124,8 @@ it('injects `createElement` and `Fragment` only once per file', function() {
     import React from 'react'
     import {useState} from 'react'
     const state = useState(0)
-    const Fragment = <></>
-    const Element = <h1></h1>
+    const fragment = <></>
+    const element = <h1></h1>
   `
   expect(transform(input)).toMatchSnapshot()
 })

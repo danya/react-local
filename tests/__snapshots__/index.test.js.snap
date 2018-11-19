@@ -53,8 +53,8 @@ const {
   useState: useState
 } = _React;
 const state = useState(0);
-const Fragment = createElement(Fragment, null);
-const Element = createElement(\\"h1\\", null);"
+const fragment = createElement(Fragment, null);
+const element = createElement(\\"h1\\", null);"
 `;
 
 exports[`transforms namespaced import statement 1`] = `
