@@ -1,45 +1,59 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`automatically extracts \`createElement\` if JSX is used 1`] = `
+exports[`automatically imports/extracts \`Fragment\` if it is used 1`] = `
+"import React from \\"react\\";
+const {
+  createElement: createElement,
+  Fragment: Fragment
+} = React;
+const fragment = createElement(Fragment, null);"
+`;
+
+exports[`automatically imports/extracts \`createElement\` if JSX is used 1`] = `
 "import React from \\"react\\";
 const {
   createElement: createElement
 } = React;
-const Header = createElement(\\"h1\\", null, \\"Text\\");
-const Content = createElement(\\"p\\", null, \\"Text\\");"
+const element = createElement(\\"div\\", null);"
 `;
-
-exports[`automatically imports \`createElement\` if JSX is used less than specified 1`] = `
-"import React, { createElement } from \\"react\\";
-const Header = createElement(\\"h1\\", null, \\"Text\\");"
-`;
-
-exports[`automatically imports/extracts \`Fragment\` if it is used 1`] = `
-"import React, { Fragment } from \\"react\\";
-const {
-  createElement: createElement
-} = React;
-const Content = createElement(Fragment, null, createElement(\\"h1\\", null, \\"Text\\"), createElement(\\"p\\", null, \\"Text\\"));"
-`;
-
-exports[`does not extract imports if there are no imports 1`] = `"import React from \\"react\\";"`;
 
 exports[`does not extract imports if they are not used 1`] = `"import _React from \\"react\\";"`;
 
-exports[`does nothing if source is not \`react\` 1`] = `"import { someFunction } from 'some-module';"`;
+exports[`does nothing if source is not \`react\` 1`] = `"import { something } from 'some-where';"`;
 
-exports[`extracts properties if they are used twice or more 1`] = `
+exports[`does nothing if there are no named improts from \`react\` 1`] = `"import React from \\"react\\";"`;
+
+exports[`extracts properties if they are used more than specified (defaults to 0) 1`] = `
 "import _React from \\"react\\";
 const {
   useState: useState
 } = _React;
-const [color, setColor] = useState('red');
-const [count, setCount] = useState(0);"
+const state1 = useState(0);
+const state2 = useState(0);"
+`;
+
+exports[`generates unique name in scope for default imported object 1`] = `
+"import _React2 from \\"react\\";
+const {
+  useState: useState
+} = _React2;
+const _React = 1;
+const state = useState(0);"
 `;
 
 exports[`imports properties if they are used less than specfied 1`] = `
-"import _React, { useState } from \\"react\\";
-const [color, setColor] = useState('red');"
+"import _React, { useState, useEffect } from \\"react\\";
+const state = useState(0);
+useEffect(() => {});"
+`;
+
+exports[`imports/extracts properties used as JSX elements 1`] = `
+"import _React from \\"react\\";
+const {
+  Suspense: Suspense,
+  createElement: createElement
+} = _React;
+const element = createElement(Suspense, null);"
 `;
 
 exports[`injects \`createElement\` and \`Fragment\` only once per file 1`] = `
@@ -52,9 +66,9 @@ import _React from \\"react\\";
 const {
   useState: useState
 } = _React;
-const state = useState(0);
 const fragment = createElement(Fragment, null);
-const element = createElement(\\"h1\\", null);"
+const element = createElement(\\"div\\", null);
+const state = useState(0);"
 `;
 
 exports[`transforms namespaced import statement 1`] = `
@@ -62,8 +76,17 @@ exports[`transforms namespaced import statement 1`] = `
 const {
   createElement: createElement
 } = React;
-const Header = createElement(\\"h1\\", null, \\"Text\\");
-const Content = createElement(\\"p\\", null, \\"Text\\");"
+const element = createElement(\\"div\\", null);"
+`;
+
+exports[`uses named imports and extract together 1`] = `
+"import _React, { useState } from \\"react\\";
+const {
+  useEffect: useEffect
+} = _React;
+const state = useState(0);
+useEffect(() => {});
+useEffect(() => {});"
 `;
 
 exports[`uses specified declaration token and \`const\` by default 1`] = `
@@ -71,8 +94,7 @@ exports[`uses specified declaration token and \`const\` by default 1`] = `
 const {
   createElement: createElement
 } = React;
-const Header = createElement(\\"h1\\", null, \\"Text\\");
-const Content = createElement(\\"p\\", null, \\"Text\\");"
+const element = createElement(\\"div\\", null);"
 `;
 
 exports[`uses specified declaration token and \`const\` by default 2`] = `
@@ -80,8 +102,7 @@ exports[`uses specified declaration token and \`const\` by default 2`] = `
 var {
   createElement: createElement
 } = React;
-const Header = createElement(\\"h1\\", null, \\"Text\\");
-const Content = createElement(\\"p\\", null, \\"Text\\");"
+const element = createElement(\\"div\\", null);"
 `;
 
 exports[`uses specified declaration token and \`const\` by default 3`] = `
@@ -89,22 +110,20 @@ exports[`uses specified declaration token and \`const\` by default 3`] = `
 let {
   createElement: createElement
 } = React;
-const Header = createElement(\\"h1\\", null, \\"Text\\");
-const Content = createElement(\\"p\\", null, \\"Text\\");"
+const element = createElement(\\"div\\", null);"
 `;
 
 exports[`uses specified local name of extracted properties 1`] = `
 "import _React from \\"react\\";
 const {
-  useState: state
+  useState: createState
 } = _React;
-const [color, setColor] = state('red');
-const [count, setCount] = state(0);"
+const state = createState(0);"
 `;
 
 exports[`uses specified local name of imported properties 1`] = `
-"import _React, { useState as state } from \\"react\\";
-const [color, setColor] = state('red');"
+"import _React, { useState as createState } from \\"react\\";
+const state = createState(0);"
 `;
 
 exports[`uses specified name of default imported object 1`] = `
@@ -112,6 +131,5 @@ exports[`uses specified name of default imported object 1`] = `
 const {
   createElement: createElement
 } = MyReact;
-const Header = createElement(\\"h1\\", null, \\"Text\\");
-const Content = createElement(\\"p\\", null, \\"Text\\");"
+const element = createElement(\\"div\\", null);"
 `;

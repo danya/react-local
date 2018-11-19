@@ -9,11 +9,11 @@ function transform(input, options = {}) {
 }
 
 it('does nothing if source is not `react`', function() {
-  const input = `import {someFunction} from 'some-module'`
+  const input = `import {something} from 'some-where'`
   expect(transform(input)).toMatchSnapshot()
 })
 
-it('does not extract imports if there are no imports', function() {
+it('does nothing if there are no named improts from `react`', function() {
   const input = `import React from 'react'`
   expect(transform(input)).toMatchSnapshot()
 })
@@ -23,36 +23,54 @@ it('does not extract imports if they are not used', function() {
   expect(transform(input)).toMatchSnapshot()
 })
 
-it('imports properties if they are used less than specfied', function() {
+it('transforms namespaced import statement', function() {
   const input = `
-    import {useState} from 'react'
-    const [color, setColor] = useState('red')
-  `
-  expect(transform(input, { extract: 2 })).toMatchSnapshot()
-})
-
-it('extracts properties if they are used twice or more', function() {
-  const input = `
-    import {useState} from 'react'
-    const [color, setColor] = useState('red')
-    const [count, setCount] = useState(0)
+    import * as React from 'react'
+    const element = <div></div>
   `
   expect(transform(input)).toMatchSnapshot()
 })
 
-it('automatically imports `createElement` if JSX is used less than specified', function() {
+it('imports properties if they are used less than specfied', function() {
   const input = `
-    import React from 'react'
-    const Header = <h1>Text</h1>
+    import {useState, useEffect} from 'react'
+    const state = useState(0)
+    useEffect(() => {})
   `
   expect(transform(input, { extract: 2 })).toMatchSnapshot()
 })
 
-it('automatically extracts `createElement` if JSX is used', function() {
+it('extracts properties if they are used more than specified (defaults to 0)', function() {
+  const input = `
+    import {useState} from 'react'
+    const state1 = useState(0)
+    const state2 = useState(0)
+  `
+  expect(transform(input)).toMatchSnapshot()
+})
+
+it('uses named imports and extract together', function() {
+  const input = `
+    import {useState, useEffect} from 'react'
+    const state = useState(0)
+    useEffect(() => {})
+    useEffect(() => {})
+  `
+  expect(transform(input, { extract: 2 })).toMatchSnapshot()
+})
+
+it('imports/extracts properties used as JSX elements', function() {
+  const input = `
+    import {Suspense} from 'react'
+    const element = <Suspense></Suspense>
+  `
+  expect(transform(input)).toMatchSnapshot()
+})
+
+it('automatically imports/extracts `createElement` if JSX is used', function() {
   const input = `
     import React from 'react'
-    const Header = <h1>Text</h1>
-    const Content = <p>Text</p>
+    const element = <div></div>
   `
   expect(transform(input)).toMatchSnapshot()
 })
@@ -60,29 +78,34 @@ it('automatically extracts `createElement` if JSX is used', function() {
 it('automatically imports/extracts `Fragment` if it is used', function() {
   const input = `
     import React from 'react'
-    const Content = (
-      <>
-        <h1>Text</h1>
-        <p>Text</p>
-      </>
-    )
+    const fragment = <></>
   `
-  expect(transform(input, { extract: 2 })).toMatchSnapshot()
+  expect(transform(input)).toMatchSnapshot()
+})
+
+it('injects `createElement` and `Fragment` only once per file', function() {
+  const input = `
+    import * as React from 'react'
+    import {useState} from 'react'
+    const fragment = <></>
+    const element = <div></div>
+    const state = useState(0)
+  `
+  expect(transform(input)).toMatchSnapshot()
 })
 
 it('uses specified local name of imported properties', function() {
   const input = `
-    import {useState as state} from 'react'
-    const [color, setColor] = state('red')
+    import {useState as createState} from 'react'
+    const state = createState(0)
   `
   expect(transform(input, { extract: 2 })).toMatchSnapshot()
 })
 
 it('uses specified local name of extracted properties', function() {
   const input = `
-    import {useState as state} from 'react'
-    const [color, setColor] = state('red')
-    const [count, setCount] = state(0)
+    import {useState as createState} from 'react'
+    const state = createState(0)
   `
   expect(transform(input)).toMatchSnapshot()
 })
@@ -90,17 +113,16 @@ it('uses specified local name of extracted properties', function() {
 it('uses specified name of default imported object', function() {
   const input = `
     import MyReact from 'react'
-    const Header = <h1>Text</h1>
-    const Content = <p>Text</p>
+    const element = <div></div>
   `
   expect(transform(input)).toMatchSnapshot()
 })
 
-it('transforms namespaced import statement', function() {
+it('generates unique name in scope for default imported object', function() {
   const input = `
-    import * as React from 'react'
-    const Header = <h1>Text</h1>
-    const Content = <p>Text</p>
+    import {useState} from 'react'
+    const _React = 1;
+    const state = useState(0)
   `
   expect(transform(input)).toMatchSnapshot()
 })
@@ -108,24 +130,9 @@ it('transforms namespaced import statement', function() {
 it('uses specified declaration token and `const` by default', function() {
   const input = `
     import React from 'react'
-    const Header = <h1>Text</h1>
-    const Content = <p>Text</p>
-  `
-  const output = transform(input)
-  expect(output).toMatchSnapshot()
-  const outputVar = transform(input, { declaration: 'var' })
-  expect(outputVar).toMatchSnapshot()
-  const outputLet = transform(input, { declaration: 'let' })
-  expect(outputLet).toMatchSnapshot()
-})
-
-it('injects `createElement` and `Fragment` only once per file', function() {
-  const input = `
-    import React from 'react'
-    import {useState} from 'react'
-    const state = useState(0)
-    const fragment = <></>
-    const element = <h1></h1>
+    const element = <div></div>
   `
   expect(transform(input)).toMatchSnapshot()
+  expect(transform(input, { declaration: 'var' })).toMatchSnapshot()
+  expect(transform(input, { declaration: 'let' })).toMatchSnapshot()
 })
