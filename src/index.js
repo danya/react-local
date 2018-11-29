@@ -2,43 +2,31 @@ const { types: t, traverse } = require('@babel/core')
 
 const VISITED = Symbol()
 
+const CREATE_ELEMENT = Symbol()
+const FRAGMENT = Symbol()
+const INJECTABLE = { [CREATE_ELEMENT]: 'createElement', [FRAGMENT]: 'Fragment' }
+
 module.exports = () => ({
   pre() {
     this.injected = new Map()
   },
 
   visitor: {
-    ImportDeclaration(path, state) {
+    ImportDeclaration(path, { opts, filename }) {
       if (path.node.source.value !== 'react') return
       if (path.node[VISITED]) return
 
-      const options = { declaration: 'const', extract: 'all', ...state.opts }
+      const options = { declaration: 'const', extract: 'all', ...opts }
 
       const { variable, namedSpecifiers, locals } = getDataFromImportNode(
         path.node
       )
 
-      if (!this.injected.has(state.filename)) {
-        const injectable = ['createElement', 'Fragment']
-        const inject = {}
-        injectable.forEach(name => {
-          const unique = path.scope.generateUidIdentifier(name).name
-          const specifiers = emulateImportSpecifier(name, unique)
-          namedSpecifiers.push(specifiers)
-          inject[name] = unique
-        })
-        this.injected.set(state.filename, inject)
-      }
-
-      const amount = getAmountOfUse(
-        locals,
-        this.injected.get(state.filename),
-        path.parent
-      )
       const imports = {}
       const extract = {}
-
+      const amount = getAmountOfUse(locals, path.parent)
       const extractCount = options.extract === 'all' ? 0 : options.extract
+
       for (let i = 0, l = namedSpecifiers.length; i < l; i++) {
         const importedName = namedSpecifiers[i].imported.name
         const localName = namedSpecifiers[i].local.name
@@ -49,6 +37,24 @@ module.exports = () => ({
         } else if (count > 0) {
           imports[localName] = importedName
         }
+      }
+
+      if (!this.injected.has(filename)) {
+        const inject = {}
+        Object.getOwnPropertySymbols(INJECTABLE).forEach(key => {
+          const count = amount[key]
+          const importedName = INJECTABLE[key]
+          const localName = path.scope.generateUidIdentifier(importedName)
+          if (count > 0) {
+            inject[importedName] = localName
+            if (count >= extractCount) {
+              extract[localName.name] = importedName
+            } else {
+              imports[localName.name] = importedName
+            }
+          }
+        })
+        this.injected.set(filename, inject)
       }
 
       const identifier = variable
@@ -64,7 +70,7 @@ module.exports = () => ({
       path.replaceWithMultiple([importNode, extractNode].filter(Boolean))
     },
 
-    MemberExpression(path, state) {
+    MemberExpression(path, { filename }) {
       const { object, property } = path.node
       const { name } = property
 
@@ -72,9 +78,11 @@ module.exports = () => ({
       if (t.isVariableDeclarator(path.parent)) return
       if (name !== 'createElement' && name !== 'Fragment') return
 
-      const identifier = this.injected.get(state.filename)[name]
-      const expression = t.expressionStatement(t.identifier(identifier))
-      path.replaceWith(expression)
+      const local = this.injected.get(filename)[name]
+      if (local) {
+        const expression = t.expressionStatement(local)
+        path.replaceWith(expression)
+      }
     }
   }
 })
@@ -93,11 +101,7 @@ function getDataFromImportNode(node) {
   return { variable, namedSpecifiers, locals }
 }
 
-function emulateImportSpecifier(imported, local) {
-  return { imported: { name: imported }, local: { name: local } }
-}
-
-function getAmountOfUse(names, pragma, ast) {
+function getAmountOfUse(names, ast) {
   const amount = {}
   const increment = prop => (amount[prop] = (amount[prop] || 0) + 1)
   traverse(ast, {
@@ -107,14 +111,14 @@ function getAmountOfUse(names, pragma, ast) {
       } else if (names.includes(path.node.name) && path.isIdentifier()) {
         increment(path.node.name)
       } else if (path.isJSXOpeningElement()) {
-        increment(pragma.createElement)
+        increment(CREATE_ELEMENT)
         const name = path.node.name.name
         if (names.includes(name)) {
           increment(name)
         }
       } else if (path.isJSXFragment()) {
-        increment(pragma.createElement)
-        increment(pragma.Fragment)
+        increment(CREATE_ELEMENT)
+        increment(FRAGMENT)
       }
     }
   })
