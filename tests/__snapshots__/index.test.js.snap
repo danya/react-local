@@ -3,18 +3,20 @@
 exports[`automatically imports/extracts \`Fragment\` if it is used 1`] = `
 "import React from \\"react\\";
 const {
-  createElement: createElement,
-  Fragment: Fragment
+  createElement: _createElement,
+  Fragment: _Fragment
 } = React;
-const fragment = createElement(Fragment, null);"
+
+const fragment = _createElement(_Fragment, null);"
 `;
 
 exports[`automatically imports/extracts \`createElement\` if JSX is used 1`] = `
 "import React from \\"react\\";
 const {
-  createElement: createElement
+  createElement: _createElement
 } = React;
-const element = createElement(\\"div\\", null);"
+
+const element = _createElement(\\"div\\", null);"
 `;
 
 exports[`does not extract imports if they are not used 1`] = `"import _React from \\"react\\";"`;
@@ -51,32 +53,37 @@ exports[`imports/extracts properties used as JSX elements 1`] = `
 "import _React from \\"react\\";
 const {
   Suspense: Suspense,
-  createElement: createElement
+  createElement: _createElement
 } = _React;
-const element = createElement(Suspense, null);"
+
+const element = _createElement(Suspense, null);"
 `;
 
 exports[`injects \`createElement\` and \`Fragment\` only once per file 1`] = `
 "import React from \\"react\\";
 const {
-  createElement: createElement,
-  Fragment: Fragment
+  createElement: _createElement,
+  Fragment: _Fragment
 } = React;
 import _React from \\"react\\";
 const {
   useState: useState
 } = _React;
-const fragment = createElement(Fragment, null);
-const element = createElement(\\"div\\", null);
+
+const fragment = _createElement(_Fragment, null);
+
+const element = _createElement(\\"div\\", null);
+
 const state = useState(0);"
 `;
 
 exports[`transforms namespaced import statement 1`] = `
 "import React from \\"react\\";
 const {
-  createElement: createElement
+  createElement: _createElement
 } = React;
-const element = createElement(\\"div\\", null);"
+
+const element = _createElement(\\"div\\", null);"
 `;
 
 exports[`uses named imports and extract together 1`] = `
@@ -92,25 +99,28 @@ useEffect(() => {});"
 exports[`uses specified declaration token and \`const\` by default 1`] = `
 "import React from \\"react\\";
 const {
-  createElement: createElement
+  createElement: _createElement
 } = React;
-const element = createElement(\\"div\\", null);"
+
+const element = _createElement(\\"div\\", null);"
 `;
 
 exports[`uses specified declaration token and \`const\` by default 2`] = `
 "import React from \\"react\\";
 var {
-  createElement: createElement
+  createElement: _createElement
 } = React;
-const element = createElement(\\"div\\", null);"
+
+const element = _createElement(\\"div\\", null);"
 `;
 
 exports[`uses specified declaration token and \`const\` by default 3`] = `
 "import React from \\"react\\";
 let {
-  createElement: createElement
+  createElement: _createElement
 } = React;
-const element = createElement(\\"div\\", null);"
+
+const element = _createElement(\\"div\\", null);"
 `;
 
 exports[`uses specified local name of extracted properties 1`] = `
@@ -129,7 +139,8 @@ const state = createState(0);"
 exports[`uses specified name of default imported object 1`] = `
 "import MyReact from \\"react\\";
 const {
-  createElement: createElement
+  createElement: _createElement
 } = MyReact;
-const element = createElement(\\"div\\", null);"
+
+const element = _createElement(\\"div\\", null);"
 `;
