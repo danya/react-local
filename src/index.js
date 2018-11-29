@@ -1,4 +1,4 @@
-const t = require('@babel/types')
+const { types: t } = require('@babel/core')
 
 const VISITED = Symbol()
 
