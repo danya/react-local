@@ -90,12 +90,25 @@ yarn add --dev babel-plugin-react-local
 > const { createElement } = require('react')
 > ```
 
-**NB**: to get effect of `react-local` do not access properties via default imported React object (`React.*`), use named imports (just `StrictMode`, `Fragment` etc.)
+**NB**: to get effect of `react-local` do not access properties via default imported React object (`React.*`), use named imports (just `useState`, `useEffect` etc.)
 
 **NB**: there are two ways to get effect of UglifyJS or Terser minification of variable names:
 
 - use code inside non-global scope (inside function for example). Webpack and other bundlers will wrap you code automatically, only if you don't use it you need to take care of wrapping.
 - use `toplevel` flag in UglifyJS/Terser.
+
+#### TypeScript
+
+If you use TypeScript you might be used to import React with namespace import declaration (`import * as React from 'react'`). It can produce some problems, in case of react-local only `createElement` and `Fragment` will be extracted to local variables. To solve this problem you can use `esModuleInterop` option in TS compiler configuration and use named imports. To know more read this [article](https://itnext.io/great-import-schism-typescript-confusion-around-imports-explained-d512fc6769c2).
+
+#### Flow
+
+In Flow when importing React as an ES module you may use either style, but importing as a namespace gives you access to React's utility types (e.g. `React.AbstractComponent`, `React.Ref`). In the latter case as well as in the case of TypeScript react-local will extract only `createElement` and `Fragment`. It will bring a good effect, but if you want more just use such syntax:
+
+```javascript
+import React, { useState } from 'react'
+import type { AbstractComponent } from 'react'
+```
 
 ### Babel configuration
 
