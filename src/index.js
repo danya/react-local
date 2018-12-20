@@ -43,9 +43,9 @@ module.exports = () => ({
         const inject = {}
         Object.getOwnPropertySymbols(INJECTABLE).forEach(key => {
           const count = amount[key]
-          const importedName = INJECTABLE[key]
-          const localName = path.scope.generateUidIdentifier(importedName)
           if (count > 0) {
+            const importedName = INJECTABLE[key]
+            const localName = path.scope.generateUidIdentifier(importedName)
             inject[importedName] = localName
             if (count >= extractCount) {
               extract[localName.name] = importedName
