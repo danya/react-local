@@ -1,128 +1,126 @@
-const { types: t, traverse } = require('@babel/core')
+const {types: t, traverse} = require('@babel/core');
 
-const VISITED = Symbol()
-
-const CREATE_ELEMENT = Symbol()
-const FRAGMENT = Symbol()
-const INJECTABLE = { [CREATE_ELEMENT]: 'createElement', [FRAGMENT]: 'Fragment' }
+const VISITED = Symbol();
+const CREATE_ELEMENT = Symbol();
+const FRAGMENT = Symbol();
 
 module.exports = () => ({
+  name: 'babel-plugin-react-local',
+
   pre() {
-    this.injected = new Map()
+    this.autoimport = new Map();
   },
 
   visitor: {
-    ImportDeclaration(path, { opts, filename }) {
-      if (path.node.source.value !== 'react') return
-      if (path.node[VISITED]) return
+    ImportDeclaration(path, {opts, filename}) {
+      if (path.node.source.value !== 'react' || path.node[VISITED]) return;
 
-      const options = { declaration: 'const', extract: 'all', ...opts }
+      const options = {declaration: 'const', extract: 'all', ...opts};
 
-      const { variable, namedSpecifiers, locals } = getDataFromImportNode(
+      const {variable, namedSpecifiers, locals} = getDataFromImportNode(
         path.node
-      )
+      );
+      const specifiers = [...namedSpecifiers];
+      const usageCount = getUsageCount(locals, path.parent);
+      const extractCount = options.extract === 'all' ? 0 : options.extract;
+      const imports = {};
+      const extract = {};
 
-      const imports = {}
-      const extract = {}
-      const amount = getAmountOfUse(locals, path.parent)
-      const extractCount = options.extract === 'all' ? 0 : options.extract
+      if (!this.autoimport.has(filename)) {
+        const autoimport = {};
+        [CREATE_ELEMENT, FRAGMENT].forEach(name => {
+          if (usageCount[name] === 0) return;
+          const importedName =
+            name === CREATE_ELEMENT ? 'createElement' : 'Fragment';
+          const localName = path.scope.generateUidIdentifier(importedName);
 
-      for (let i = 0, l = namedSpecifiers.length; i < l; i++) {
-        const importedName = namedSpecifiers[i].imported.name
-        const localName = namedSpecifiers[i].local.name
-        const count = amount[localName]
-
-        if (count >= extractCount) {
-          extract[localName] = importedName
-        } else if (count > 0) {
-          imports[localName] = importedName
-        }
+          specifiers.push(
+            t.importSpecifier(localName, t.identifier(importedName))
+          );
+          usageCount[localName.name] = usageCount[name];
+          autoimport[importedName] = localName;
+        });
+        this.autoimport.set(filename, autoimport);
       }
 
-      if (!this.injected.has(filename)) {
-        const inject = {}
-        Object.getOwnPropertySymbols(INJECTABLE).forEach(key => {
-          const count = amount[key]
-          if (count > 0) {
-            const importedName = INJECTABLE[key]
-            const localName = path.scope.generateUidIdentifier(importedName)
-            inject[importedName] = localName
-            if (count >= extractCount) {
-              extract[localName.name] = importedName
-            } else {
-              imports[localName.name] = importedName
-            }
-          }
-        })
-        this.injected.set(filename, inject)
+      for (let i = 0, l = specifiers.length; i < l; i++) {
+        const importedName = specifiers[i].imported.name;
+        const localName = specifiers[i].local.name;
+        const count = usageCount[localName];
+        if (count >= extractCount) {
+          extract[localName] = importedName;
+        } else if (count > 0) {
+          imports[localName] = importedName;
+        }
       }
 
       const identifier = variable
         ? t.identifier(variable)
-        : path.scope.generateUidIdentifier('React')
-      const importNode = createImportNode(identifier, imports, 'react')
-      importNode[VISITED] = true
+        : path.scope.generateUidIdentifier('React');
+      const importNode = createImportNode(identifier, imports, 'react');
+      importNode[VISITED] = true;
       const extractNode =
         Object.keys(extract).length > 0
           ? createExtractNode(options.declaration, identifier, extract)
-          : null
+          : null;
 
-      path.replaceWithMultiple([importNode, extractNode].filter(Boolean))
+      path.replaceWithMultiple([importNode, extractNode].filter(Boolean));
     },
 
-    MemberExpression(path, { filename }) {
-      const { object, property } = path.node
-      const { name } = property
-
-      if (object.name !== 'React') return
-      if (t.isVariableDeclarator(path.parent)) return
-      if (name !== 'createElement' && name !== 'Fragment') return
-
-      const local = this.injected.get(filename)[name]
-      if (local) {
-        const expression = t.expressionStatement(local)
-        path.replaceWith(expression)
+    MemberExpression(path, {filename}) {
+      if (
+        path.node.object.name !== 'React' ||
+        t.isVariableDeclarator(path.parent) ||
+        (path.node.property.name !== 'createElement' &&
+          path.node.property.name !== 'Fragment')
+      ) {
+        return;
       }
-    }
-  }
-})
+
+      const localName = this.autoimport.get(filename)[path.node.property.name];
+      if (localName) {
+        const expression = t.expressionStatement(localName);
+        path.replaceWith(expression);
+      }
+    },
+  },
+});
 
 function getDataFromImportNode(node) {
-  const { specifiers } = node
-
+  const {specifiers} = node;
   const variable =
     t.isImportNamespaceSpecifier(specifiers[0]) ||
     t.isImportDefaultSpecifier(specifiers[0])
       ? specifiers[0].local.name
-      : null
-  const namedSpecifiers = specifiers.filter(t.isImportSpecifier)
-  const locals = namedSpecifiers.map(s => s.local.name)
+      : null;
+  const namedSpecifiers = specifiers.filter(t.isImportSpecifier);
+  const locals = namedSpecifiers.map(s => s.local.name);
 
-  return { variable, namedSpecifiers, locals }
+  return {variable, namedSpecifiers, locals};
 }
 
-function getAmountOfUse(names, ast) {
-  const amount = {}
-  const increment = prop => (amount[prop] = (amount[prop] || 0) + 1)
+function getUsageCount(names, ast) {
+  const amount = {};
+  const inc = prop => (amount[prop] = (amount[prop] || 0) + 1);
   traverse(ast, {
     enter(path) {
       if (path.isImportDeclaration() && path.node.source.value === 'react') {
-        path.skip()
+        path.skip();
       } else if (names.includes(path.node.name) && path.isIdentifier()) {
-        increment(path.node.name)
+        inc(path.node.name);
       } else if (path.isJSXOpeningElement()) {
-        increment(CREATE_ELEMENT)
-        const name = path.node.name.name
+        inc(CREATE_ELEMENT);
+        const name = path.node.name.name;
         if (names.includes(name)) {
-          increment(name)
+          inc(name);
         }
       } else if (path.isJSXFragment()) {
-        increment(CREATE_ELEMENT)
-        increment(FRAGMENT)
+        inc(CREATE_ELEMENT);
+        inc(FRAGMENT);
       }
-    }
-  })
-  return amount
+    },
+  });
+  return amount;
 }
 
 function createImportNode(identifier, imports, source) {
@@ -130,9 +128,9 @@ function createImportNode(identifier, imports, source) {
     t.importDefaultSpecifier(identifier),
     ...Object.keys(imports).map(name =>
       t.importSpecifier(t.identifier(name), t.identifier(imports[name]))
-    )
-  ]
-  return t.importDeclaration(specifiers, t.stringLiteral(source))
+    ),
+  ];
+  return t.importDeclaration(specifiers, t.stringLiteral(source));
 }
 
 function createExtractNode(kind, identifier, extract) {
@@ -140,6 +138,6 @@ function createExtractNode(kind, identifier, extract) {
     Object.keys(extract).map(name =>
       t.objectProperty(t.identifier(extract[name]), t.identifier(name))
     )
-  )
-  return t.variableDeclaration(kind, [t.variableDeclarator(id, identifier)])
+  );
+  return t.variableDeclaration(kind, [t.variableDeclarator(id, identifier)]);
 }
