@@ -24,13 +24,14 @@ For example see also time cost difference between JavaScript and image with the 
 > **TL;DR**
 >
 > - almost no effect for transfer JavaScript size/time;
-> - very good improvements of parse, compile and execution size/time.
+> - very good improvements of parse, compile and execution size/time;
+> - to benchmark your app running time before and after this plugin use [size-limit](https://github.com/ai/size-limit).
 
 When using React, a lot of extra code is created because React uses `React.createElement` pragma for JSX and it (and other imports) cannot be well mangled ([see below](#explanation) why). It is not good for your app for JS execution time and therefore for speed of your application.
 
 There is almost no size effect of `react-local` for transfer size of JS if you use gzip or brotli because they usually work fairly well for repeated strings.
 
-But using `react-local` you can easily reduce size of JavaScript browser need to parse, compile and execute and therefore reduce time of JS processing. For example, `react-local` reduces ~1 KB for each ~62 calling of `createElement`.
+But using `react-local` you can easily reduce size of JavaScript browser need to parse, compile and execute and therefore reduce time of JS processing. For example, `react-local` reduces ~1 KB for each ~62 calling of `createElement`. You can try to benchmark your app execution time before and after this plugin using [size-limit](https://github.com/ai/size-limit).
 
 ### Benchmarks
 
@@ -43,7 +44,7 @@ But using `react-local` you can easily reduce size of JavaScript browser need to
 |   useEffect   |      ~78       |    ~1002    |
 |   Fragment    |      ~85       |    ~1003    |
 
-_\* without parentheses, any parameters and semicolons. You can find more [here](/benchmarks/benchmarks/)._
+\_\* without parentheses, any parameters and semicolons.
 
 ### Explanation
 
@@ -56,8 +57,8 @@ Just let's see on minified version of codes above created by Webpack production 
 - with `react-local`
 
 ```javascript
-const { Fragment: u, createElement: l } = o.a // React.default
-const a = l(u, null, l('h1', null, 'Header'), l('p', null, 'Text'))
+const {Fragment: u, createElement: l} = o.a; // React.default
+const a = l(u, null, l('h1', null, 'Header'), l('p', null, 'Text'));
 ```
 
 - without `react-local`
@@ -68,7 +69,7 @@ const a = o.a.createElement(
   null,
   o.a.createElement('h1', null, 'Header'),
   o.a.createElement('p', null, 'Text')
-)
+);
 ```
 
 ## Installation
@@ -87,7 +88,7 @@ yarn add --dev babel-plugin-react-local
 > If you use CommonJS you don't need `react-local`. You should just configure plugin for JSX (change `pragma`) and use such syntax for accessing of React properties:
 >
 > ```javascript
-> const { createElement } = require('react')
+> const {createElement} = require('react');
 > ```
 
 **NB**: to get effect of `react-local` do not access properties via default imported React object (`React.*`), use named imports (just `useState`, `useEffect` etc.)
@@ -106,8 +107,8 @@ If you use TypeScript you might be used to import React with namespace import de
 In Flow when importing React as an ES module you may use either style, but importing as a namespace gives you access to React's utility types (e.g. `React.AbstractComponent`, `React.Ref`). In the latter case as well as in the case of TypeScript react-local will extract only `createElement` and `Fragment`. It will bring a good effect, but if you want more just use such syntax:
 
 ```javascript
-import React, { useState } from 'react'
-import type { AbstractComponent } from 'react'
+import React, {useState} from 'react';
+import type {AbstractComponent} from 'react';
 ```
 
 ### Babel configuration
@@ -119,8 +120,8 @@ Example of Babel configuration:
 ```javascript
 module.exports = {
   presets: ['@babel/react'],
-  plugins: ['react-local']
-}
+  plugins: ['react-local'],
+};
 ```
 
 ## Options
