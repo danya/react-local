@@ -20,7 +20,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "jest ./tests --coverage",
-    "lint": "eslint ./src ./tests ./benchmarks/calculate",
+    "lint": "eslint ./src ./tests",
     "spellcheck": "yaspeller-ci *.md",
     "sandbox": "node ./tests/sandbox.js"
   },
