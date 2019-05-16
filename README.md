@@ -137,9 +137,3 @@ There are also some other ways do something like this plugin do:
 
 - `@babel/preset-react` + `webpack.ProvidePlugin` — see [article](https://medium.com/@jilizart/reduce-the-size-of-final-jsx-code-c39effca906f)
 - `jsx-compress-loader` for webpack — see [repository](https://github.com/theKashey/jsx-compress-loader)
-
-## License
-
-This code is licensed under the MIT License. See license file to get more information.
-
-Copyright Daniil Poroshin ([@philosaf](https://github.com/philosaf)).
