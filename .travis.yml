@@ -5,6 +5,7 @@ node_js:
 cache: yarn
 script:
   - yarn
+  - yarn add @babel/core
   - yarn spellcheck
   - yarn lint
   - yarn test

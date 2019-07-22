@@ -24,7 +24,7 @@
     "spellcheck": "yaspeller-ci *.md",
     "sandbox": "node ./tests/sandbox.js"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@babel/core": "^7.1.6"
   },
   "devDependencies": {
