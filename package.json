@@ -10,10 +10,10 @@
     "size",
     "speed"
   ],
-  "repository": "https://github.com/philosaf/react-local",
-  "homepage": "https://github.com/philosaf/react-local#readme",
+  "repository": "https://github.com/danya/react-local",
+  "homepage": "https://github.com/danya/react-local#readme",
   "bugs": {
-    "url": "https://github.com/philosaf/react-local/issues"
+    "url": "https://github.com/danya/react-local/issues"
   },
   "author": "Daniil Poroshin <daniilporoshin@gmail.com>",
   "license": "MIT",
