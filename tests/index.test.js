@@ -3,7 +3,6 @@ const plugin = require('../src')
 
 function transform(input) {
   return babel.transformSync(input, {
-    presets: ['@babel/react'],
     plugins: [plugin()]
   }).code
 }
