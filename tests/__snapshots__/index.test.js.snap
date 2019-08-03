@@ -1,146 +1,40 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`automatically imports/extracts \`Fragment\` if it is used 1`] = `
-"import React from \\"react\\";
+exports[`creates local variables for named imports 1`] = `
+"import React from 'react';
 const {
-  createElement: _createElement,
-  Fragment: _Fragment
+  useState,
+  useEffect
+} = React;"
+`;
+
+exports[`supports import aliasing 1`] = `
+"import React from 'react';
+const {
+  useState: foo
+} = React;"
+`;
+
+exports[`supports import with no default import 1`] = `
+"import React from 'react';
+const {
+  useState
+} = React;"
+`;
+
+exports[`supports mixed imports 1`] = `
+"import React from 'react';
+const {
+  useState
 } = React;
-
-const fragment = _createElement(_Fragment, null);"
-`;
-
-exports[`automatically imports/extracts \`createElement\` if JSX is used 1`] = `
-"import React from \\"react\\";
 const {
-  createElement: _createElement
-} = React;
-
-const element = _createElement(\\"div\\", null);"
+  useEffect
+} = React;"
 `;
 
-exports[`does not extract imports if they are not used 1`] = `"import _React from \\"react\\";"`;
+exports[`transforms React.createElement calls 1`] = `
+"import React from 'react';
+const _createElement = React.createElement;
 
-exports[`does nothing if source is not \`react\` 1`] = `"import { something } from 'some-where';"`;
-
-exports[`does nothing if there are no named improts from \`react\` 1`] = `"import React from \\"react\\";"`;
-
-exports[`extracts properties if they are used more than specified (defaults to 0) 1`] = `
-"import _React from \\"react\\";
-const {
-  useState: useState
-} = _React;
-const state1 = useState(0);
-const state2 = useState(0);"
-`;
-
-exports[`generates unique name in scope for default imported object 1`] = `
-"import _React2 from \\"react\\";
-const {
-  useState: useState
-} = _React2;
-const _React = 1;
-const state = useState(0);"
-`;
-
-exports[`imports properties if they are used less than specfied 1`] = `
-"import _React, { useState, useEffect } from \\"react\\";
-const state = useState(0);
-useEffect(() => {});"
-`;
-
-exports[`imports/extracts properties used as JSX elements 1`] = `
-"import _React from \\"react\\";
-const {
-  Suspense: Suspense,
-  createElement: _createElement
-} = _React;
-
-const element = _createElement(Suspense, null);"
-`;
-
-exports[`injects \`createElement\` and \`Fragment\` only once per file 1`] = `
-"import React from \\"react\\";
-const {
-  createElement: _createElement,
-  Fragment: _Fragment
-} = React;
-import _React from \\"react\\";
-const {
-  useState: useState
-} = _React;
-
-const fragment = _createElement(_Fragment, null);
-
-const element = _createElement(\\"div\\", null);
-
-const state = useState(0);"
-`;
-
-exports[`transforms namespaced import statement 1`] = `
-"import React from \\"react\\";
-const {
-  createElement: _createElement
-} = React;
-
-const element = _createElement(\\"div\\", null);"
-`;
-
-exports[`uses named imports and extract together 1`] = `
-"import _React, { useState } from \\"react\\";
-const {
-  useEffect: useEffect
-} = _React;
-const state = useState(0);
-useEffect(() => {});
-useEffect(() => {});"
-`;
-
-exports[`uses specified declaration token and \`const\` by default 1`] = `
-"import React from \\"react\\";
-const {
-  createElement: _createElement
-} = React;
-
-const element = _createElement(\\"div\\", null);"
-`;
-
-exports[`uses specified declaration token and \`const\` by default 2`] = `
-"import React from \\"react\\";
-var {
-  createElement: _createElement
-} = React;
-
-const element = _createElement(\\"div\\", null);"
-`;
-
-exports[`uses specified declaration token and \`const\` by default 3`] = `
-"import React from \\"react\\";
-let {
-  createElement: _createElement
-} = React;
-
-const element = _createElement(\\"div\\", null);"
-`;
-
-exports[`uses specified local name of extracted properties 1`] = `
-"import _React from \\"react\\";
-const {
-  useState: createState
-} = _React;
-const state = createState(0);"
-`;
-
-exports[`uses specified local name of imported properties 1`] = `
-"import _React, { useState as createState } from \\"react\\";
-const state = createState(0);"
-`;
-
-exports[`uses specified name of default imported object 1`] = `
-"import MyReact from \\"react\\";
-const {
-  createElement: _createElement
-} = MyReact;
-
-const element = _createElement(\\"div\\", null);"
+const element = _createElement('div');"
 `;

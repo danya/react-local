@@ -21,8 +21,7 @@
   "scripts": {
     "test": "jest ./tests --coverage",
     "lint": "eslint ./src ./tests",
-    "spellcheck": "yaspeller-ci *.md",
-    "sandbox": "node ./tests/sandbox.js"
+    "spellcheck": "yaspeller-ci *.md"
   },
   "peerDependencies": {
     "@babel/core": "^7.1.6"
