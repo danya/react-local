@@ -1,6 +1,8 @@
 const { types: t } = require('@babel/core')
 
 module.exports = function() {
+  // Create variable declaration node with destructuring pattern and
+  // insert it after first default or namespace import from react
   function createDestructuringNode(path, imports) {
     const declarator = t.variableDeclarator(
       t.objectPattern(
