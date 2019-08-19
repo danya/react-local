@@ -1,7 +1,24 @@
 const { types: t } = require('@babel/core')
 
 module.exports = function() {
-  // Transform named imports to local variables
+  function createDestructuringNode(path, imports) {
+    const declarator = t.variableDeclarator(
+      t.objectPattern(
+        imports.map(specifier =>
+          t.objectProperty(
+            t.identifier(specifier.imported),
+            t.identifier(specifier.local),
+            false,
+            specifier.imported === specifier.local
+          )
+        )
+      ),
+      t.identifier('React')
+    )
+    path.insertAfter(t.variableDeclaration('const', [declarator]))
+    path.scope.registerDeclaration(path.getNextSibling())
+  }
+
   function visitImportDeclaration(path, state) {
     if (path.node.source.value !== 'react') {
       return
@@ -17,25 +34,21 @@ module.exports = function() {
           local: specifier.node.local.name
         })
         specifier.remove()
-      } else if (
-        t.isImportDefaultSpecifier(specifier) ||
-        t.isImportNamespaceSpecifier(specifier)
-      ) {
+      } else {
+        // This is default or namespace specifier
+        // We need import bounded to variable named as in default JSX pragma
         const local = specifier.get('local')
-        // We need default or namespace import bounded to local
-        // variable `React` because this name is used as default
-        // pragma in Babel's JSX compiler
         if (local.node.name === 'React') {
           state.generalImport = path
         }
       }
     }
-    // We need default or namespace import from React for
-    // variable declaration, so if there is no default or
-    // namespace import just add it
+    // We need default or namespace import from React for variable
+    // declaration, so if there is no default or namespace import just add it
     if (!state.generalImport) {
-      const defaultSpecifier = t.importDefaultSpecifier(t.identifier('React'))
-      path.pushContainer('specifiers', [defaultSpecifier])
+      path.pushContainer('specifiers', [
+        t.importDefaultSpecifier(t.identifier('React'))
+      ])
       path.scope.registerDeclaration(path)
       state.generalImport = path
     }
@@ -45,30 +58,12 @@ module.exports = function() {
     if (updatedSpecifiers.length === 0) {
       path.remove()
     }
-    // Create a destructuring variable declaration
+    // Insert variable declaration after the first default or namespace import
     if (imports.length > 0) {
-      const declarator = t.variableDeclarator(
-        t.objectPattern(
-          imports.map(specifier =>
-            t.objectProperty(
-              t.identifier(specifier.imported),
-              t.identifier(specifier.local),
-              false,
-              specifier.imported === specifier.local
-            )
-          )
-        ),
-        t.identifier('React')
-      )
-      // Every time insert variable declaration right after the first
-      // import statement with default or namespace specifiers bounded to `React`
-      const importPath = state.generalImport
-      importPath.insertAfter(t.variableDeclaration('const', [declarator]))
-      importPath.scope.registerDeclaration(path.getNextSibling())
+      createDestructuringNode(state.generalImport, imports)
     }
   }
 
-  // Check if object in member expression is reference to React
   function isReactImport(path) {
     const identifierName = path.node.name
     const binding = path.scope.getBinding(identifierName)
@@ -77,26 +72,23 @@ module.exports = function() {
       t.isImportNamespaceSpecifier(binding.path)
     ) {
       const parentPath = binding.path.parentPath
-      return (
-        t.isImportDeclaration(parentPath) &&
-        parentPath.node.source.value === 'react'
-      )
+      return parentPath.node.source.value === 'react'
     }
     return false
   }
 
   // Insert after import statement reference to `React.createElement`
   // and return its name for use across all AST
-  function createCreateElementRef(importPath) {
-    const reference = importPath.scope.generateUidIdentifier('createElement')
+  function createCreateElementRef(path) {
+    const reference = path.scope.generateUidIdentifier('createElement')
     const declaration = t.variableDeclaration('const', [
       t.variableDeclarator(
         reference,
         t.memberExpression(t.identifier('React'), t.identifier('createElement'))
       )
     ])
-    importPath.insertAfter(declaration)
-    importPath.scope.registerDeclaration(importPath.getNextSibling())
+    path.insertAfter(declaration)
+    path.scope.registerDeclaration(path.getNextSibling())
     return reference
   }
 
