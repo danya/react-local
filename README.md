@@ -7,7 +7,7 @@ Babel plugin that optimize your React application transforming your imports to l
 - **amount of code browser need to parse and compile** (see [explanation](#explanation))
 - and therefore **time of all JavaScript execution** (see [Jeremy Wagner's article](https://developers.google.com/web/fundamentals/performance/optimizing-javascript/tree-shaking/) on Web Fundamentals and Addy Osmani's article "[The Cost of JavaScript](https://medium.com/dev-channel/the-cost-of-javascript-84009f51e99e)")
 
-### Example:
+**Example:**
 
 ```javascript
 // `o.a` is React's default import object after webpack in production mode
