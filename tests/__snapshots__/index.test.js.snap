@@ -16,10 +16,10 @@ const {
 `;
 
 exports[`supports import with no default import 1`] = `
-"import React from 'react';
+"import _React from 'react';
 const {
   useState
-} = React;"
+} = _React;"
 `;
 
 exports[`supports mixed imports 1`] = `

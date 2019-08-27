@@ -3,10 +3,12 @@ const { types: t } = require('@babel/core')
 module.exports = function() {
   // Create variable declaration node with destructuring pattern and
   // insert it after first default or namespace import from react
-  function createDestructuringNode(path, imports) {
+  function createDestructuringNode(path, props) {
+    // First specifier of import statement is default or namespace one
+    const target = path.node.specifiers[0].local.name
     const declarator = t.variableDeclarator(
       t.objectPattern(
-        imports.map(specifier =>
+        props.map(specifier =>
           t.objectProperty(
             t.identifier(specifier.imported),
             t.identifier(specifier.local),
@@ -15,7 +17,7 @@ module.exports = function() {
           )
         )
       ),
-      t.identifier('React')
+      t.identifier(target)
     )
     path.insertAfter(t.variableDeclaration('const', [declarator]))
     path.scope.registerDeclaration(path.getNextSibling())
@@ -25,6 +27,7 @@ module.exports = function() {
     if (path.node.source.value !== 'react') {
       return
     }
+
     // Collect named specifiers to list and remove them from the import
     // statement. Default and namespace specifiers are saved
     const imports = []
@@ -36,31 +39,27 @@ module.exports = function() {
           local: specifier.node.local.name
         })
         specifier.remove()
-      } else {
+      } else if (!state.generalImport) {
         // This is default or namespace specifier
-        // We need import bounded to variable named as in default JSX pragma
-        const local = specifier.get('local')
-        if (local.node.name === 'React') {
-          state.generalImport = path
-        }
+        state.generalImport = path
       }
     }
-    // We need default or namespace import from React for variable
-    // declaration, so if there is no default or namespace import just add it
+
     if (!state.generalImport) {
-      path.pushContainer('specifiers', [
-        t.importDefaultSpecifier(t.identifier('React'))
-      ])
+      // We need default or namespace import from React for variable declaration,
+      // so if there is no default or namespace import just add it
+      const id = path.scope.generateUidIdentifier('React')
+      path.unshiftContainer('specifiers', [t.importDefaultSpecifier(id)])
       path.scope.registerDeclaration(path)
       state.generalImport = path
+    } else {
+      // In case we have multiple imports we can just remove the last one
+      const updatedSpecifiers = path.get('specifiers')
+      if (updatedSpecifiers.length === 0) {
+        path.remove()
+      }
     }
-    // In case we have multiple imports we can just remove the last
-    // one because we can use default import from the first statement
-    const updatedSpecifiers = path.get('specifiers')
-    if (updatedSpecifiers.length === 0) {
-      path.remove()
-    }
-    // Insert variable declaration after the first default or namespace import
+
     if (imports.length > 0) {
       createDestructuringNode(state.generalImport, imports)
     }
