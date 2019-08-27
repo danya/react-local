@@ -5,10 +5,7 @@
   "keywords": [
     "react",
     "jsx",
-    "compress",
-    "optimization",
-    "size",
-    "speed"
+    "compression"
   ],
   "repository": "https://github.com/danya/react-local",
   "homepage": "https://github.com/danya/react-local#readme",
@@ -30,5 +27,8 @@
     "eslint": "^5.8.0",
     "jest": "^23.6.0",
     "yaspeller-ci": "^1.0.0"
+  },
+  "dependencies": {
+    "@babel/core": "^7.5.5"
   }
 }
