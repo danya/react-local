@@ -69,8 +69,9 @@ module.exports = function() {
     const identifierName = path.node.name
     const binding = path.scope.getBinding(identifierName)
     if (
-      t.isImportDefaultSpecifier(binding.path) ||
-      t.isImportNamespaceSpecifier(binding.path)
+      binding !== undefined &&
+      (t.isImportDefaultSpecifier(binding.path) ||
+        t.isImportNamespaceSpecifier(binding.path))
     ) {
       const parentPath = binding.path.parentPath
       return parentPath.node.source.value === 'react'
