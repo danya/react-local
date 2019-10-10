@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-react-local",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Babel plugin that helps to optimize React application transforming your imports to local variables.",
   "keywords": [
     "react",
