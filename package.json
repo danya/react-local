@@ -16,17 +16,13 @@
   "license": "MIT",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest ./tests --coverage",
-    "lint": "eslint ./src ./tests",
-    "spellcheck": "yaspeller-ci *.md"
+    "test": "jest ./tests --coverage"
   },
   "peerDependencies": {
     "@babel/core": "^7.1.6"
   },
   "devDependencies": {
-    "eslint": "^5.8.0",
-    "jest": "^23.6.0",
-    "yaspeller-ci": "^1.0.0"
+    "jest": "^23.6.0"
   },
   "dependencies": {
     "@babel/core": "^7.5.5"
