@@ -14,7 +14,7 @@
   },
   "author": "Daniil Poroshin <daniilporoshin@gmail.com>",
   "license": "MIT",
-  "main": "src/index.js",
+  "main": "index.js",
   "scripts": {
     "test": "jest ./tests --coverage"
   },
