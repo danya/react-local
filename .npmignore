@@ -1,7 +1,0 @@
-node_modules/
-tests/
-coverage/
-.github/
-
-npm-debug.log
-.gitignore
