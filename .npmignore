@@ -1,12 +1,7 @@
 node_modules/
 tests/
 coverage/
-benchmarks/
 .github/
 
 npm-debug.log
-yarn-error.log
-yarn.lock
 .gitignore
-.yaspellerrc
-.eslintrc.json
