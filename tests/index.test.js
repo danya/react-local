@@ -1,5 +1,5 @@
 const babel = require('@babel/core')
-const plugin = require('../src')
+const plugin = require('../index.js')
 
 function transform(input) {
   return babel.transformSync(input, {
