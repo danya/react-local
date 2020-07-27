@@ -1,17 +1,7 @@
 {
   "name": "babel-plugin-react-local",
   "version": "0.6.3",
-  "description": "Babel plugin that helps to optimize React application transforming your imports to local variables.",
-  "keywords": [
-    "react",
-    "jsx",
-    "compression"
-  ],
   "repository": "https://github.com/danya/react-local",
-  "homepage": "https://github.com/danya/react-local#readme",
-  "bugs": {
-    "url": "https://github.com/danya/react-local/issues"
-  },
   "author": "Daniil Poroshin <daniilporoshin@gmail.com>",
   "license": "MIT",
   "main": "index.js",
