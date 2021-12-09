@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-react-local",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "repository": "https://github.com/danya/react-local",
   "author": "Daniil Poroshin <daniilporoshin@gmail.com>",
   "license": "MIT",
