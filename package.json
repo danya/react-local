@@ -12,9 +12,9 @@
     "@babel/core": "^7.1.6"
   },
   "devDependencies": {
-    "jest": "^23.6.0"
+    "jest": "^27.4.3"
   },
   "dependencies": {
-    "@babel/core": "^7.5.5"
+    "@babel/core": "^7.1.6"
   }
 }
