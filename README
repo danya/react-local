@@ -1,6 +1,0 @@
-This project is part of my early *experiments* with compilers.
-Be careful using it.
-
-This plugin transforms ES6-style imports from react that cannot
-be mangled (because with standard options minifiers don't know 
-if property access is constant or not) to local variables. 
